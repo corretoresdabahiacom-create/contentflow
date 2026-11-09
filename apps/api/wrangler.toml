@@ -1,0 +1,23 @@
+name = "contentflow"
+main = "src/index.ts"
+compatibility_date = "2025-09-01"
+
+# Um único Worker serve a API e o frontend (assets estáticos): mesma origem, cookies SameSite simples.
+[assets]
+directory = "../web/dist"
+not_found_handling = "single-page-application"
+run_worker_first = ["/api/*", "/billing", "/billing/*"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "contentflow"
+# Preencher com o id real após `wrangler d1 create contentflow` (deploy bloqueado até lá).
+database_id = "SET_AFTER_WRANGLER_D1_CREATE"
+migrations_dir = "migrations"
+
+[triggers]
+crons = ["0 * * * *"]
+
+[vars]
+ENVIRONMENT = "production"
+# Segredos (nunca aqui): SESSION_PEPPER, TURNSTILE_SECRET -> `wrangler secret put`.

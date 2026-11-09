@@ -1,0 +1,69 @@
+{
+  "nav": {
+    "home": "Home",
+    "limitations": "Limitations",
+    "login": "Sign in",
+    "register": "Create account",
+    "app": "Dashboard",
+    "logout": "Sign out",
+    "theme": "Theme",
+    "language": "Language"
+  },
+  "theme": { "system": "System", "light": "Light", "dark": "Dark" },
+  "offline": "You are offline. Only the app shell is available; pages that need the server will not load.",
+  "landing": {
+    "title": "One content in. Many channel-ready formats out.",
+    "subtitle": "ContentFlow AI turns a text or a transcript into a library of materials adapted to each channel, and tells you exactly what was processed for real and what is a template-based suggestion.",
+    "honest": "No generative AI is called by default. Outputs are labeled \"template\" or, in the future, \"AI\". Audio and video are not processed on our servers.",
+    "cta": "Create free account",
+    "limitsLink": "Read what the product does not do"
+  },
+  "auth": {
+    "loginTitle": "Sign in",
+    "registerTitle": "Create your account",
+    "email": "Email",
+    "password": "Password",
+    "passwordHint": "At least 10 characters. It is processed in your browser; the server never receives your password.",
+    "displayName": "Name (optional)",
+    "submit": "Continue",
+    "working": "Working…",
+    "noAccount": "No account yet?",
+    "haveAccount": "Already registered?",
+    "tooShort": "Password must have at least 10 characters.",
+    "turnstileWaiting": "Complete the verification to continue.",
+    "notConfigured": "Not configured",
+    "authNotConfigured": "Sign-in is not configured on this server (missing server secret). Nothing can be submitted.",
+    "turnstileNotConfigured": "Bot protection (Turnstile) is not configured on this server, so sign-in and sign-up are blocked.",
+    "devBypass": "Development mode: bot protection is bypassed. This never happens in production."
+  },
+  "errors": {
+    "invalid_credentials": "Invalid email or password.",
+    "email_taken": "This email is already registered.",
+    "rate_limited": "Too many attempts. Try again later.",
+    "turnstile_failed": "Bot verification failed. Try again.",
+    "turnstile_not_configured": "Bot protection is not configured on this server.",
+    "server_not_configured": "The server is not configured for authentication.",
+    "validation_error": "Please check the data you entered.",
+    "origin_not_allowed": "Request blocked for security reasons.",
+    "internal_error": "Something went wrong. Try again.",
+    "network": "Could not reach the server."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Signed in as {{email}}",
+    "workspaces": "Your workspaces",
+    "personal": "personal",
+    "agency": "agency",
+    "role": "role",
+    "platform": "Platform status",
+    "auth": "Authentication",
+    "bot": "Bot protection",
+    "billing": "Billing",
+    "billingOff": "Off (no paid plans)",
+    "uploads": "Media upload",
+    "uploadsOff": "Unavailable",
+    "ok": "Configured",
+    "next": "Projects and text processing arrive in the next phase."
+  },
+  "notFound": "Page not found."
+}

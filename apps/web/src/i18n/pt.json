@@ -1,0 +1,69 @@
+{
+  "nav": {
+    "home": "Início",
+    "limitations": "Limitações",
+    "login": "Entrar",
+    "register": "Criar conta",
+    "app": "Painel",
+    "logout": "Sair",
+    "theme": "Tema",
+    "language": "Idioma"
+  },
+  "theme": { "system": "Sistema", "light": "Claro", "dark": "Escuro" },
+  "offline": "Você está offline. Apenas o shell do app está disponível; páginas que dependem do servidor não carregam.",
+  "landing": {
+    "title": "Um conteúdo entra. Vários formatos prontos para canais saem.",
+    "subtitle": "O ContentFlow AI transforma um texto ou uma transcrição em uma biblioteca de materiais adaptados a cada canal, e diz exatamente o que foi processado de verdade e o que é sugestão baseada em template.",
+    "honest": "Nenhuma IA generativa é chamada por padrão. As saídas são marcadas como \"template\" ou, no futuro, \"IA\". Áudio e vídeo não são processados nos nossos servidores.",
+    "cta": "Criar conta gratuita",
+    "limitsLink": "Leia o que o produto não faz"
+  },
+  "auth": {
+    "loginTitle": "Entrar",
+    "registerTitle": "Crie sua conta",
+    "email": "E-mail",
+    "password": "Senha",
+    "passwordHint": "Pelo menos 10 caracteres. Ela é processada no seu navegador; o servidor nunca recebe a sua senha.",
+    "displayName": "Nome (opcional)",
+    "submit": "Continuar",
+    "working": "Processando…",
+    "noAccount": "Ainda não tem conta?",
+    "haveAccount": "Já tem cadastro?",
+    "tooShort": "A senha precisa ter pelo menos 10 caracteres.",
+    "turnstileWaiting": "Conclua a verificação para continuar.",
+    "notConfigured": "Não configurado",
+    "authNotConfigured": "O login não está configurado neste servidor (falta o segredo do servidor). Nada pode ser enviado.",
+    "turnstileNotConfigured": "A proteção contra bots (Turnstile) não está configurada neste servidor; por isso cadastro e login estão bloqueados.",
+    "devBypass": "Modo de desenvolvimento: a proteção contra bots está dispensada. Isso nunca ocorre em produção."
+  },
+  "errors": {
+    "invalid_credentials": "E-mail ou senha inválidos.",
+    "email_taken": "Este e-mail já está cadastrado.",
+    "rate_limited": "Muitas tentativas. Tente novamente mais tarde.",
+    "turnstile_failed": "A verificação anti-bot falhou. Tente de novo.",
+    "turnstile_not_configured": "A proteção contra bots não está configurada neste servidor.",
+    "server_not_configured": "O servidor não está configurado para autenticação.",
+    "validation_error": "Confira os dados informados.",
+    "origin_not_allowed": "Requisição bloqueada por segurança.",
+    "internal_error": "Algo deu errado. Tente novamente.",
+    "network": "Não foi possível falar com o servidor."
+  },
+  "dashboard": {
+    "title": "Painel",
+    "welcome": "Conectado como {{email}}",
+    "workspaces": "Seus workspaces",
+    "personal": "pessoal",
+    "agency": "agência",
+    "role": "papel",
+    "platform": "Estado da plataforma",
+    "auth": "Autenticação",
+    "bot": "Proteção anti-bot",
+    "billing": "Cobrança",
+    "billingOff": "Desligada (sem planos pagos)",
+    "uploads": "Upload de mídia",
+    "uploadsOff": "Indisponível",
+    "ok": "Configurado",
+    "next": "Projetos e processamento de texto chegam na próxima fase."
+  },
+  "notFound": "Página não encontrada."
+}

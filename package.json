@@ -1,0 +1,28 @@
+{
+  "name": "contentflow",
+  "private": true,
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "typecheck": "pnpm -r typecheck",
+    "lint": "eslint .",
+    "test": "pnpm -r test",
+    "format": "prettier --write .",
+    "db:generate": "pnpm --filter @contentflow/api db:generate",
+    "gen:limitations": "tsx scripts/gen-limitations-doc.ts",
+    "check:limitations": "tsx scripts/gen-limitations-doc.ts --check"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.65.0",
+    "eslint": "^10.14.0",
+    "prettier": "^3.9.10",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.72.1",
+    "vitest": "^5.1.0"
+  },
+  "type": "module"
+}
