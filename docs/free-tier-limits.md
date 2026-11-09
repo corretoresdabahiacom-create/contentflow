@@ -16,7 +16,8 @@ Regra: nenhum recurso é usado sem fonte e data nesta tabela. Valores abaixo for
 2. **Senha:** com 10 ms de CPU, a chave é derivada por PBKDF2 pesado no navegador (Web Crypto). O servidor guarda só um hash rápido dessa chave, com salt por usuário e pepper em secret. **Hipótese a medir na Fase 1**; resultado em `docs/security.md`.
 3. **Rate limit:** sem KV (1.000 escritas/dia). Turnstile mais contadores em D1 por janela, limites em `system_settings`.
 4. **Fila de jobs:** Cron (1 min) mais `processing_jobs`. Queues descartado (10 mil ops/dia, retenção de 24 h).
-5. **Quotas ativas:** limites do D1 (500 MB por banco, 2 MB por linha). Quotas de arquivo (5 GB, 200 MB) desativadas.
+5. **Fase 2 (2026-11-09):** nenhum serviço novo. Dependências de navegador gratuitas e sem rede (`franc-min`, `mammoth`, `unpdf`). Orçamento de escritas D1: criar saídas é 1 `batch` (conta como 1 consulta); cada edição = 1 escrita; cada exportação = 1 escrita em `usage_records` mais 1 em `audit_logs`. Quotas novas: 200 saídas por projeto e 500 exportações por mês por workspace.
+6. **Quotas ativas:** limites do D1 (500 MB por banco, 2 MB por linha). Quotas de arquivo (5 GB, 200 MB) desativadas.
 
 ## 1. Cloudflare Workers (Free)
 

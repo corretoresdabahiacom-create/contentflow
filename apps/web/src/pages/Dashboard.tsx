@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import { Workspace } from './Workspace';
 import { Limitation } from '../limitations/Limitation';
 import { useMe, useServerConfig } from '../lib/session';
 
@@ -34,8 +35,13 @@ export function Dashboard() {
             </li>
           ))}
         </ul>
-        <p className="mt-3 text-sm">{t('dashboard.next')}</p>
       </div>
+      {me.data.workspaces[0] && (
+        <div>
+          <h2 className="mb-2 text-lg font-medium">{t('dashboard.clients')}</h2>
+          <Workspace ws={me.data.workspaces[0].id} role={me.data.workspaces[0].role} />
+        </div>
+      )}
       <div>
         <h2 className="mb-2 text-lg font-medium">{t('dashboard.platform')}</h2>
         {c && (

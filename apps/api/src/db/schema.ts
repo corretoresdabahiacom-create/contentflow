@@ -318,6 +318,29 @@ export const transcriptSegments = sqliteTable(
   ],
 );
 
+// Fase 2: texto-fonte de um projeto (um por projeto). Só texto; arquivos são lidos no navegador.
+export const projectSources = sqliteTable(
+  'project_sources',
+  {
+    projectId: text('project_id')
+      .primaryKey()
+      .references(() => projects.id, { onDelete: 'cascade' }),
+    workspaceId: text('workspace_id')
+      .notNull()
+      .references(() => workspaces.id, { onDelete: 'cascade' }),
+    kind: text('kind').notNull(),
+    filename: text('filename'),
+    text: text('text').notNull(),
+    chars: integer('chars').notNull(),
+    analysisJson: text('analysis_json'),
+    ...ts(),
+  },
+  (t) => [
+    index('project_sources_ws_idx').on(t.workspaceId),
+    check('project_sources_kind_ck', sql`${t.kind} in ('paste','txt','md','docx','pdf','csv','json')`),
+  ],
+);
+
 // ---------- conteúdo ----------
 export const contentOutputs = sqliteTable(
   'content_outputs',

@@ -9,7 +9,11 @@
     "theme": "Tema",
     "language": "Idioma"
   },
-  "theme": { "system": "Sistema", "light": "Claro", "dark": "Escuro" },
+  "theme": {
+    "system": "Sistema",
+    "light": "Claro",
+    "dark": "Escuro"
+  },
   "offline": "Você está offline. Apenas o shell do app está disponível; páginas que dependem do servidor não carregam.",
   "landing": {
     "title": "Um conteúdo entra. Vários formatos prontos para canais saem.",
@@ -46,7 +50,11 @@
     "validation_error": "Confira os dados informados.",
     "origin_not_allowed": "Requisição bloqueada por segurança.",
     "internal_error": "Algo deu errado. Tente novamente.",
-    "network": "Não foi possível falar com o servidor."
+    "network": "Não foi possível falar com o servidor.",
+    "quota_exceeded": "Uma quota do plano gratuito foi atingida. Nada foi alterado.",
+    "version_conflict": "Este item foi alterado em outro lugar. Foi recarregado; tente de novo.",
+    "not_found": "Não encontrado.",
+    "forbidden": "Seu papel não permite isso."
   },
   "dashboard": {
     "title": "Painel",
@@ -63,7 +71,64 @@
     "uploads": "Upload de mídia",
     "uploadsOff": "Indisponível",
     "ok": "Configurado",
-    "next": "Projetos e processamento de texto chegam na próxima fase."
+    "clients": "Clientes e projetos"
   },
-  "notFound": "Página não encontrada."
+  "notFound": "Página não encontrada.",
+  "ws": {
+    "noProjects": "Nenhum projeto ainda.",
+    "archived": "arquivado",
+    "delete": "Excluir",
+    "deleteProjectAria": "Excluir projeto {{name}}",
+    "confirmDeleteProject": "Excluir o projeto \"{{name}}\" e todos os seus resultados? Não dá para desfazer.",
+    "confirmDeleteClient": "Excluir o cliente \"{{name}}\" e todos os seus projetos? Não dá para desfazer.",
+    "projectName": "Nome do projeto",
+    "createProject": "Criar projeto",
+    "clientName": "Nome do cliente",
+    "createClient": "Criar cliente",
+    "defaultClient": "Meus projetos"
+  },
+  "project": {
+    "source": "Texto-fonte",
+    "sourceHint": "Cole um texto ou abra um arquivo .txt, .md, .docx, .pdf, .csv ou .json. Os arquivos são lidos no seu navegador; só o texto extraído é guardado (o arquivo não é enviado).",
+    "upload": "Abrir um arquivo",
+    "text": "Texto",
+    "chars": "caracteres",
+    "saveAnalyze": "Salvar e analisar",
+    "analysis": "Análise",
+    "language": "Idioma",
+    "stats": "Tamanho",
+    "words": "palavras",
+    "sentences": "frases",
+    "keywords": "Palavras-chave",
+    "summary": "Resumo extrativo",
+    "algorithms": "Calculado no seu navegador: idioma {{lang}}, palavras-chave {{kw}}, resumo {{sum}}. São métodos estatísticos clássicos, não IA generativa.",
+    "stale": "O texto mudou desde a última análise. Salve e analise de novo antes de gerar.",
+    "generate": "Gerar resultados a partir de templates",
+    "outputs": "Resultados",
+    "outputsHint": "Cada resultado abaixo vem de templates fixos preenchidos com seu texto, palavras-chave e resumo. Não foram escritos por IA; revise e edite antes de usar.",
+    "noOutputs": "Nada gerado ainda.",
+    "save": "Salvar alterações",
+    "badgeTemplate": "template",
+    "badgeTemplateHint": "Gerado a partir de um template fixo, não por IA",
+    "export": "Exportar",
+    "exportAs": "Exportar {{format}}"
+  },
+  "kinds": {
+    "title": "Título",
+    "description": "Descrição",
+    "caption": "Legenda",
+    "script": "Roteiro",
+    "article": "Artigo",
+    "newsletter": "Newsletter",
+    "post": "Post"
+  },
+  "reader": {
+    "unsupported": "Tipo de arquivo não suportado. Use .txt, .md, .docx, .pdf, .csv ou .json.",
+    "too_large": "O arquivo tem mais de 10 MB.",
+    "empty": "O arquivo não tem texto.",
+    "invalid_json": "Este JSON não é válido.",
+    "no_text": "Nenhum texto extraível. Documentos escaneados precisam de OCR, que não é suportado.",
+    "too_long": "O texto tem mais de 200.000 caracteres.",
+    "parse_failed": "Não foi possível ler este arquivo. Ele pode estar corrompido ou protegido."
+  }
 }

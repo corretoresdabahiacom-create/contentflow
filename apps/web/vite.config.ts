@@ -39,6 +39,8 @@ export default defineConfig({
       },
     }),
   ],
+  // Build de navegador do mammoth (aceita {arrayBuffer}); o build Node só aceita path/buffer.
+  resolve: { alias: { mammoth: 'mammoth/mammoth.browser.js' } },
   server: { proxy: { '/api': 'http://localhost:8787' } },
   test: {
     environment: 'jsdom',

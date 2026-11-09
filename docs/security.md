@@ -24,6 +24,14 @@ Contadores por janela em D1 (por IP com hash e por e-mail com hash). Cada tentat
 ## Isolamento
 Não-membro de workspace recebe 404 (não revela existência); papel insuficiente, 403. Client e projeto precisam pertencer ao workspace/client da URL. Cobertura em `apps/api/test/isolation.test.ts` e `e2e/app.spec.ts`.
 
+## Texto, arquivos e saídas (Fase 2)
+- Arquivos (.docx, .pdf etc.) **nunca chegam ao servidor**: são lidos no navegador (mammoth, unpdf, limite de 10 MB) e só o texto extraído é enviado (máx. 200.000 caracteres, validado também no servidor com zod). Isso evita parsing de formatos complexos no Worker e qualquer armazenamento de arquivo.
+- A análise (idioma, palavras-chave, resumo) roda no navegador; o servidor valida o formato do resultado, não o recalcula. Um cliente malicioso pode gravar uma análise falsa **no próprio projeto**; isso não afeta outros tenants e é aceito.
+- O servidor força `source_kind='template'` nas saídas; um cliente não consegue rotular conteúdo como "AI" ou "wasm".
+- Toda rota de projeto/saída/exportação passa por `requireAuth → workspaceContext → clientContext → projectContext`, e as queries filtram também por `workspace_id`. Outro tenant recebe 404 (testado em API e E2E). Papéis: `member` cria projetos e edita saídas; `admin`/`owner` administram clientes e apagam projetos.
+- A exportação CSV neutraliza injeção de fórmula; nomes de arquivo são higienizados.
+- Texto renderizado no React sem `dangerouslySetInnerHTML`; saídas editáveis aparecem só em `<textarea>`.
+
 ## Headers e dados
 API: `X-Content-Type-Options`, `X-Frame-Options: DENY`, `Referrer-Policy`, `Cache-Control: no-store`. Frontend (`apps/web/public/_headers`): CSP restritiva (só `self` e `challenges.cloudflare.com`). O service worker **não** faz cache de `/api` nem de dados privados; só do shell e assets. Logs de auditoria guardam IP com hash, nunca o IP, a senha ou a chave. Lint (`no-restricted-syntax`) proíbe gravar credenciais em storage.
 

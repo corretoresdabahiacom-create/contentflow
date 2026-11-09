@@ -1,4 +1,4 @@
-# Arquitetura (Fase 1)
+# Arquitetura (Fases 1–2)
 
 ```
 apps/web  (React + Vite + Tailwind, PWA)   ──build──►  apps/web/dist
@@ -13,3 +13,9 @@ packages/shared  (zod, constantes, derivação da chave de autenticação)
 - **Estado real na UI (R4):** `/api/config` informa se auth e Turnstile estão configurados; o frontend bloqueia e explica.
 - **Limitações:** `apps/web/src/limitations/data.ts` é a fonte única; gera `docs/limitations.md` (CI falha se divergir) e alimenta o componente `<Limitation />`.
 - **Testes:** Vitest (shared, API sobre D1 simulado com `node:sqlite`, web), Playwright (E2E com workerd local e Chrome; desktop e mobile).
+
+## Fase 2: texto → formatos
+- **Processamento no navegador.** O Worker Free tem 10 ms de CPU; leitura de arquivos (mammoth/unpdf, carregados sob demanda), análise e geração rodam no cliente (`packages/shared/src/text`, funções puras e determinísticas, com testes). O servidor valida, persiste e isola por tenant.
+- **Motor de texto:** idioma (`franc-min`: por/eng/spa), palavras-chave (implementação própria *inspirada* em YAKE, rotulada `yake-inspired@1`, sem alegar equivalência), resumo extrativo (TextRank sobre similaridade de cosseno TF-IDF, `textrank-tfidf@1`). Stopwords em pt/en/es.
+- **Templates:** placeholders `{{titulo}}`, `{{trecho}}`, `{{keywords}}`, `{{cta}}` (mais `{{resumo}}`), catálogo pt/en conforme o idioma detectado; 7 tipos: título, descrição, legenda, roteiro, artigo, newsletter, post. Toda saída é `source_kind='template'`, definido pelo servidor.
+- **Fluxo de dados:** `PUT .../source` (texto + análise) → `POST .../outputs` (lote) → `PATCH .../outputs/:id` (bloqueio otimista por `version`) → `GET .../export-data` (conta a quota mensal) → serialização local. Detalhes do formato em `docs/export.md`.

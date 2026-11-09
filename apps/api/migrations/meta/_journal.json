@@ -15,6 +15,13 @@
       "when": 1794242814555,
       "tag": "0001_seed_defaults",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1794242815000,
+      "tag": "0002_project_sources",
+      "breakpoints": true
     }
   ]
 }

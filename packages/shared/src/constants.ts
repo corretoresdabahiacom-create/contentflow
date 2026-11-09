@@ -22,5 +22,6 @@ export const ERROR_CODES = {
   TURNSTILE_NOT_CONFIGURED: 'turnstile_not_configured',
   ORIGIN_NOT_ALLOWED: 'origin_not_allowed',
   QUOTA_EXCEEDED: 'quota_exceeded',
+  VERSION_CONFLICT: 'version_conflict',
 } as const;
 export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES];

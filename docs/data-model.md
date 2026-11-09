@@ -21,6 +21,9 @@ Identidade: `users`, `user_profiles`, `sessions`. Workspaces: `workspaces`, `wor
 
 ## Desvios do §6.1 (decididos e registrados)
 
+- `project_sources` (migração 0002, Fase 2): um texto-fonte por projeto (`kind`, `filename`, `text`, `chars`, `analysis_json`). Substitui o uso de `source_files` enquanto não há storage de arquivos; só o texto extraído é guardado (limite de 200.000 caracteres, bem abaixo dos 2 MB/linha do D1).
+- `content_outputs.version` é usada como bloqueio otimista: `PATCH` exige a versão atual e responde `409 version_conflict` se mudou. `source_kind` é sempre definido pelo servidor (`template` na Fase 2); o cliente não escolhe.
+- Novas chaves em `system_settings`: `quota.exports_per_month` (500) e `quota.outputs_per_project` (200). Exportações contam em `usage_records` (`metric='exports'`, `period` AAAA-MM).
 - `shared_link_outputs` (junção) foi adicionada para guardar quais outputs cada link expõe.
 - `rate_limit_counters` vive em **D1**, não em KV (KV Free: 1.000 escritas/dia).
 - `source_files.storage_key` é nulo: não há storage de arquivos nesta fase (R2 excluído).

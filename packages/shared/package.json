@@ -10,6 +10,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "franc-min": "^6.2.0",
     "zod": "^4.6.7"
   },
   "devDependencies": {

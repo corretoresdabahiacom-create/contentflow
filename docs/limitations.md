@@ -2,7 +2,7 @@
 
 > Documento público, gerado a partir de `apps/web/src/limitations/data.ts`. **Não edite este arquivo diretamente.** Rode `pnpm gen:limitations`.
 
-**Versão:** 0.2.1 · **Última atualização:** 2026-11-09
+**Versão:** 0.3.0 · **Última atualização:** 2026-11-09
 
 ## Sumário
 
@@ -10,6 +10,7 @@
 - [Renderização de vídeo](#limitacao-renderizacao-de-video) — _Indisponível_
 - [Upload e armazenamento de arquivos de mídia](#limitacao-upload-de-midia) — _Indisponível_
 - [Recuperação de senha por e-mail](#limitacao-recuperacao-de-senha) — _Indisponível_
+- [Formatos de entrada e geração por template](#limitacao-formatos-de-entrada-e-geracao) — _Limitado_
 - [Publicação automática em redes sociais](#limitacao-publicacao-automatica-em-redes-sociais) — _Indisponível_
 - [Geração por IA generativa](#limitacao-ia-externa) — _Indisponível_
 - [Análise de emoção, expressão facial ou viralidade](#limitacao-analise-de-emocao-e-viralidade) — _Indisponível_
@@ -91,7 +92,21 @@ O projeto não usa e-mail transacional (serviço pago ou com cartão), então n�
 **O que você pode fazer:**
 
 - Guardar a senha em um gerenciador de senhas.
-- Exportar seus textos periodicamente (exportação chega na próxima fase).
+- Exportar seus projetos periodicamente (TXT, MD, CSV ou JSON).
+
+<a id="limitacao-formatos-de-entrada-e-geracao"></a>
+
+## Formatos de entrada e geração por template
+
+**Status:** Limitado
+
+A entrada aceita colagem de texto e arquivos .txt, .md, .docx, .pdf, .csv e .json, lidos no navegador (até 10 MB e 200.000 caracteres de texto). PDFs escaneados não têm texto extraível e não há OCR. As saídas são montadas por templates fixos; palavras-chave e resumo usam métodos estatísticos clássicos, não IA generativa.
+
+**O que você pode fazer:**
+
+- Para PDFs escaneados, rodar OCR fora do produto e colar o texto.
+- Revisar e editar cada saída: elas são rascunhos rotulados como template.
+- Outros formatos (.pptx, .xlsx, .odt, .rtf) não são prometidos; converta para .docx, .txt ou .csv.
 
 <a id="limitacao-publicacao-automatica-em-redes-sociais"></a>
 
@@ -211,6 +226,8 @@ O plano gratuito tem quotas para manter o custo operacional em zero. A capacidad
 | Exportações por mês | 500 |
 | Membros por workspace | 10 |
 | Clientes por workspace (agência) | 10 |
+| Saídas por projeto | 200 |
+| Tamanho do texto-fonte | 200.000 caracteres |
 
 **O que você pode fazer:**
 

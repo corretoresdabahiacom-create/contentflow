@@ -6,6 +6,7 @@ import type { AppEnv } from '../context';
 import { clients, workspaces } from '../db/schema';
 import { audit } from '../lib/audit';
 import { HttpError } from '../lib/http';
+import { registerContentRoutes } from './content';
 import {
   clientContext,
   projectContext,
@@ -70,7 +71,5 @@ workspaceRoutes.get('/:workspaceId/clients/:clientId', async (c) => {
   return c.json({ id: c.get('clientId'), workspaceId: c.get('membership').workspaceId });
 });
 
-// Rota mínima só para exercitar a cadeia completa; o CRUD de projetos é da Fase 2.
-workspaceRoutes.get('/:workspaceId/clients/:clientId/projects/:projectId', async (c) => {
-  return c.json({ id: c.get('projectId'), clientId: c.get('clientId') });
-});
+// Fase 2: CRUD de clients/projects, source, outputs e export.
+registerContentRoutes(workspaceRoutes);

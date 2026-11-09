@@ -2,7 +2,7 @@
 
 SaaS multi-tenant que transforma **um** conteúdo (texto ou transcrição) em **vários** formatos prontos para canais, com transparência sobre o que é processamento real e o que é sugestão por template. Custo zero: somente free tiers, sem cartão.
 
-> Estado: **Fase 1 (fundação)**. Existem cadastro/login, workspace pessoal, isolamento multi-tenant, i18n EN/PT, PWA instalável e a página de limitações. Projetos, textos, transcrição, cortes, calendário e administração chegam nas próximas fases. Veja `docs/limitations.md` para o que o produto **não** faz.
+> Estado: **Fase 2 (texto → formatos)**. Além da fundação da Fase 1 (cadastro/login, workspace pessoal, isolamento multi-tenant, i18n EN/PT, PWA), é possível criar clientes e projetos, colar texto ou abrir .txt/.md/.docx/.pdf/.csv/.json (lidos no navegador), analisar (idioma, palavras-chave, resumo extrativo), gerar saídas **por template** (rotuladas `template`, sem IA), editar com controle de versão e exportar em TXT/MD/CSV/JSON (`docs/export.md`). Transcrição, cortes, calendário e administração chegam nas próximas fases. Veja `docs/limitations.md` para o que o produto **não** faz.
 
 ## Estrutura
 - `apps/web`: React + Vite + Tailwind (PWA)

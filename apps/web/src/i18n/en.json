@@ -9,7 +9,11 @@
     "theme": "Theme",
     "language": "Language"
   },
-  "theme": { "system": "System", "light": "Light", "dark": "Dark" },
+  "theme": {
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark"
+  },
   "offline": "You are offline. Only the app shell is available; pages that need the server will not load.",
   "landing": {
     "title": "One content in. Many channel-ready formats out.",
@@ -46,7 +50,11 @@
     "validation_error": "Please check the data you entered.",
     "origin_not_allowed": "Request blocked for security reasons.",
     "internal_error": "Something went wrong. Try again.",
-    "network": "Could not reach the server."
+    "network": "Could not reach the server.",
+    "quota_exceeded": "A free-plan quota was reached. Nothing was changed.",
+    "version_conflict": "This item was changed elsewhere. It was reloaded; try again.",
+    "not_found": "Not found.",
+    "forbidden": "Your role does not allow this."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -63,7 +71,64 @@
     "uploads": "Media upload",
     "uploadsOff": "Unavailable",
     "ok": "Configured",
-    "next": "Projects and text processing arrive in the next phase."
+    "clients": "Clients and projects"
   },
-  "notFound": "Page not found."
+  "notFound": "Page not found.",
+  "ws": {
+    "noProjects": "No projects yet.",
+    "archived": "archived",
+    "delete": "Delete",
+    "deleteProjectAria": "Delete project {{name}}",
+    "confirmDeleteProject": "Delete project \"{{name}}\" and all its outputs? This cannot be undone.",
+    "confirmDeleteClient": "Delete client \"{{name}}\" and all its projects? This cannot be undone.",
+    "projectName": "Project name",
+    "createProject": "Create project",
+    "clientName": "Client name",
+    "createClient": "Create client",
+    "defaultClient": "My projects"
+  },
+  "project": {
+    "source": "Source text",
+    "sourceHint": "Paste text or open a .txt, .md, .docx, .pdf, .csv or .json file. Files are read in your browser; only the extracted text is stored (the file itself is not uploaded).",
+    "upload": "Open a file",
+    "text": "Text",
+    "chars": "characters",
+    "saveAnalyze": "Save and analyze",
+    "analysis": "Analysis",
+    "language": "Language",
+    "stats": "Size",
+    "words": "words",
+    "sentences": "sentences",
+    "keywords": "Keywords",
+    "summary": "Extractive summary",
+    "algorithms": "Computed in your browser: language {{lang}}, keywords {{kw}}, summary {{sum}}. These are classic statistical methods, not generative AI.",
+    "stale": "The text changed since the last analysis. Save and analyze again before generating.",
+    "generate": "Generate outputs from templates",
+    "outputs": "Outputs",
+    "outputsHint": "Every output below is built from fixed templates filled with your text, keywords and summary. They are not AI-written; review and edit before using.",
+    "noOutputs": "Nothing generated yet.",
+    "save": "Save changes",
+    "badgeTemplate": "template",
+    "badgeTemplateHint": "Generated from a fixed template, not by AI",
+    "export": "Export",
+    "exportAs": "Export {{format}}"
+  },
+  "kinds": {
+    "title": "Title",
+    "description": "Description",
+    "caption": "Caption",
+    "script": "Script",
+    "article": "Article",
+    "newsletter": "Newsletter",
+    "post": "Post"
+  },
+  "reader": {
+    "unsupported": "Unsupported file type. Use .txt, .md, .docx, .pdf, .csv or .json.",
+    "too_large": "File is larger than 10 MB.",
+    "empty": "The file has no text.",
+    "invalid_json": "This is not valid JSON.",
+    "no_text": "No extractable text found. Scanned documents need OCR, which is not supported.",
+    "too_long": "The text is longer than 200,000 characters.",
+    "parse_failed": "Could not read this file. It may be corrupted or protected."
+  }
 }

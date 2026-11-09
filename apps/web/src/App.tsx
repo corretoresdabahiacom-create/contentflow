@@ -4,6 +4,7 @@ import { LimitationsList } from './limitations/LimitationsList';
 import { AuthForm } from './pages/AuthForm';
 import { Dashboard } from './pages/Dashboard';
 import { Landing } from './pages/Landing';
+import { ProjectPage } from './pages/ProjectPage';
 import { NotFound } from './pages/NotFound';
 
 export function App() {
@@ -14,6 +15,7 @@ export function App() {
         <Route path="login" element={<AuthForm mode="login" />} />
         <Route path="register" element={<AuthForm mode="register" />} />
         <Route path="app" element={<Dashboard />} />
+        <Route path="app/clients/:clientId/projects/:projectId" element={<ProjectPage />} />
         <Route path="docs/limitations" element={<LimitationsList />} />
         <Route path="*" element={<NotFound />} />
       </Route>

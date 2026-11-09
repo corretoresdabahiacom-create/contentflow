@@ -74,9 +74,22 @@ export const limitations: readonly Limitation[] = [
       'O projeto não usa e-mail transacional (serviço pago ou com cartão), então não há como enviar um link de redefinição. Se você perder a senha, a conta não pode ser recuperada.',
     alternatives: [
       'Guardar a senha em um gerenciador de senhas.',
-      'Exportar seus textos periodicamente (exportação chega na próxima fase).',
+      'Exportar seus projetos periodicamente (TXT, MD, CSV ou JSON).',
     ],
     inlineNotice: 'Não há recuperação de senha por e-mail.',
+  },
+  {
+    id: 'formatos-de-entrada-e-geracao',
+    title: 'Formatos de entrada e geração por template',
+    status: 'limited',
+    reason:
+      'A entrada aceita colagem de texto e arquivos .txt, .md, .docx, .pdf, .csv e .json, lidos no navegador (até 10 MB e 200.000 caracteres de texto). PDFs escaneados não têm texto extraível e não há OCR. As saídas são montadas por templates fixos; palavras-chave e resumo usam métodos estatísticos clássicos, não IA generativa.',
+    alternatives: [
+      'Para PDFs escaneados, rodar OCR fora do produto e colar o texto.',
+      'Revisar e editar cada saída: elas são rascunhos rotulados como template.',
+      'Outros formatos (.pptx, .xlsx, .odt, .rtf) não são prometidos; converta para .docx, .txt ou .csv.',
+    ],
+    inlineNotice: 'Saídas são geradas por template, sem IA, e PDFs escaneados não são lidos.',
   },
   {
     id: 'publicacao-automatica-em-redes-sociais',
@@ -167,6 +180,8 @@ export const limitations: readonly Limitation[] = [
       { label: 'Exportações por mês', value: '500' },
       { label: 'Membros por workspace', value: '10' },
       { label: 'Clientes por workspace (agência)', value: '10' },
+      { label: 'Saídas por projeto', value: '200' },
+      { label: 'Tamanho do texto-fonte', value: '200.000 caracteres' },
     ],
     sourceDoc: 'docs/free-tier-limits.md#2-cloudflare-d1-free',
   },
@@ -227,7 +242,7 @@ export const limitationsById: Record<string, Limitation> = Object.fromEntries(
   limitations.map((l) => [l.id, l]),
 );
 
-export const limitationsMeta = { version: '0.2.1', updatedAt: '2026-11-09' } as const;
+export const limitationsMeta = { version: '0.3.0', updatedAt: '2026-11-09' } as const;
 
 /** Id de âncora URL-safe. */
 export function anchorId(id: string): string {
