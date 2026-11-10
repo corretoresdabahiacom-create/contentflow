@@ -551,3 +551,233 @@ test('plano de edição: exporta MD/CSV/TXT/JSON com IN/OUT, roteiro e notas; se
   // nada de vídeo: não há botão de cortar/renderizar
   await expect(page.getByRole('button', { name: /cortar vídeo|cut video|render/i })).toHaveCount(0);
 });
+
+// ---------- Fase 6: equipes, calendário, aprovações e compartilhamento ----------
+const apiOf = (page: Page) => {
+  const origin = { Origin: new URL(page.url()).origin };
+  return {
+    get: async (path: string) => page.request.get(path),
+    send: async (method: 'post' | 'put' | 'patch' | 'delete', path: string, data?: unknown) =>
+      page.request.fetch(path, { method: method.toUpperCase(), data, headers: origin }),
+  };
+};
+const wsOf = async (p: Page, kind: 'personal' | 'agency') =>
+  ((await (await p.request.get('/api/auth/me')).json()).workspaces as { id: string; kind: string }[]).find((w) => w.kind === kind)!.id;
+
+/** Cria client, projeto, texto-fonte e dois outputs por API (o que está em teste é a Fase 6, não a Fase 2). */
+async function seedContent(page: Page, ws: string, clientName?: string) {
+  const a = apiOf(page);
+  let clientId: string;
+  if (clientName) clientId = (await (await a.send('post', `/api/workspaces/${ws}/clients`, { name: clientName })).json()).id;
+  else clientId = (await (await a.get(`/api/workspaces/${ws}/clients`)).json()).clients[0].id;
+  const base = `/api/workspaces/${ws}/clients/${clientId}`;
+  const projectId = (await (await a.send('post', `${base}/projects`, { name: 'Projeto' })).json()).id;
+  await a.send('put', `${base}/projects/${projectId}/source`, { kind: 'paste', text: 'TEXTO-FONTE-PRIVADO que nunca deve vazar.' });
+  const outs = (await (await a.send('post', `${base}/projects/${projectId}/outputs`, { outputs: [{ channel: 'generic', kind: 'post', title: 'Título público', body: 'Corpo escolhido para o cliente.' }, { channel: 'generic', kind: 'post', title: 'Título interno', body: 'Rascunho que não será compartilhado.' }] })).json()).outputs as { id: string }[];
+  return { clientId, projectId, base, outs };
+}
+
+test('equipe: convite por link (uso único), papéis e aprovação de output', async ({ browser }) => {
+  const owner = await (await browser.newContext()).newPage();
+  const guest = await (await browser.newContext()).newPage();
+  const late = await (await browser.newContext()).newPage();
+  await register(owner, `own-${uniq()}@example.com`);
+  await register(guest, `gst-${uniq()}@example.com`);
+  await register(late, `lat-${uniq()}@example.com`);
+
+  // owner cria o workspace de equipe e o conteúdo
+  await owner.getByLabel('Team workspace name').fill('Agência Sol');
+  await owner.getByRole('button', { name: 'Create team workspace' }).click();
+  await expect(owner.getByLabel('Active workspace')).toBeVisible();
+  const ws = await wsOf(owner, 'agency');
+  const seeded = await seedContent(owner, ws, 'Cliente Praia');
+
+  // convite por link
+  await owner.getByRole('link', { name: 'Team, members and invites' }).click();
+  await expect(owner.getByRole('heading', { name: 'Team: Agência Sol' })).toBeVisible();
+  await owner.getByRole('button', { name: 'Create invite link' }).click();
+  const inviteUrl = await owner.getByLabel('Invite link', { exact: true }).inputValue();
+  expect(inviteUrl).toMatch(/\/invite\/[\w-]{40,}$/);
+  await expect(owner.getByText(/it will not be shown again/)).toBeVisible();
+
+  await guest.goto(inviteUrl);
+  await expect(guest.getByText(/invited to join “Agência Sol” as member/)).toBeVisible();
+  await guest.getByRole('button', { name: 'Accept invite' }).click();
+  await expect(guest).toHaveURL(/\/app$/);
+  await guest.getByLabel('Active workspace').selectOption({ label: 'Agência Sol (agency)' });
+  await expect(guest.getByRole('region', { name: 'Cliente Praia' })).toBeVisible();
+
+  // uso único: o mesmo link não funciona para outra pessoa
+  await late.goto(inviteUrl);
+  await expect(late.getByText(/invalid, expired, revoked or already used/)).toBeVisible();
+
+  // membro pede aprovação na página do projeto
+  await guest.goto(`/app/w/${ws}/clients/${seeded.clientId}/projects/${seeded.projectId}`);
+  const card = guest.getByRole('article', { name: 'Post' }).first();
+  await expect(card.getByText('not requested')).toBeVisible();
+  await card.getByRole('button', { name: 'Request approval' }).click();
+  await card.getByLabel('Note (optional)').fill('pode publicar?');
+  await card.getByRole('button', { name: 'Send request' }).click();
+  await expect(card.getByText('approval pending')).toBeVisible();
+
+  // membro não decide; owner vê na caixa de entrada e aprova
+  await guest.goto('/app');
+  await guest.getByLabel('Active workspace').selectOption({ label: 'Agência Sol (agency)' });
+  const item = guest.getByRole('listitem', { name: /^Approval:/ });
+  await expect(item).toBeVisible();
+  await expect(item.getByRole('button', { name: 'Approve' })).toHaveCount(0);
+  await owner.goto('/app');
+  await owner.getByLabel('Active workspace').selectOption({ label: 'Agência Sol (agency)' });
+  const ownerItem = owner.getByRole('listitem', { name: /^Approval:/ });
+  await expect(ownerItem).toContainText('pode publicar?');
+  await ownerItem.getByRole('button', { name: 'Approve' }).click();
+  await expect(owner.getByText('Nothing waiting for approval.')).toBeVisible();
+
+  await guest.goto(`/app/w/${ws}/clients/${seeded.clientId}/projects/${seeded.projectId}`);
+  await expect(guest.getByRole('article', { name: 'Post' }).first().getByText('approved', { exact: true })).toBeVisible();
+  // editar o output invalida a aprovação
+  const first = guest.getByRole('article', { name: 'Post' }).first();
+  await first.getByRole('textbox').fill('Corpo editado depois da aprovação');
+  await first.getByRole('button', { name: 'Save changes' }).click();
+  await expect(first.getByText('changed after approval')).toBeVisible();
+
+  // owner troca o papel e o membro sai
+  await owner.goto(`/app/w/${ws}/team`);
+  await owner.getByLabel(/^Role of gst-/).selectOption('admin');
+  await expect(owner.getByLabel(/^Role of gst-/)).toHaveValue('admin');
+});
+
+test('calendário editorial: arrastar entre dias, semana/mês, edição e persistência', async ({ page }, info) => {
+  await register(page, `cal-${uniq()}@example.com`);
+  await page.getByRole("link", { name: /^Calendar and brand kit of/ }).click();
+  await expect(page.getByRole('heading', { name: 'Editorial calendar' })).toBeVisible();
+  await expect(page.getByText(/nothing is published automatically/)).toBeVisible();
+
+  const now = new Date();
+  const ymd = (d: number) => `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+  const cell = (d: number) => page.getByTestId(`day:${Date.UTC(now.getFullYear(), now.getMonth(), d)}`);
+  const form = page.getByRole('form', { name: 'New calendar item' });
+  await form.getByLabel('Title').fill('Post A');
+  await form.getByLabel('Date').fill(ymd(15));
+  await form.getByRole('button', { name: 'Add to calendar' }).click();
+  await form.getByLabel('Title').fill('Ideia solta');
+  await form.getByLabel('Date').fill('');
+  await form.getByRole('button', { name: 'Add to calendar' }).click();
+  const chip = (title: string) => page.getByRole('button', { name: `Calendar item: ${title}` });
+  await expect(cell(15).getByRole('button', { name: /Post A/ })).toBeVisible();
+  await expect(page.getByTestId('day:none').getByRole('button', { name: /Ideia solta/ })).toBeVisible();
+
+  if (info.project.name === 'desktop') {
+    const drag = async (from: ReturnType<typeof chip>, to: ReturnType<typeof cell>) => {
+      const a = (await from.boundingBox())!;
+      const b = (await to.boundingBox())!;
+      await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
+      await page.mouse.down();
+      await page.mouse.move(a.x + a.width / 2 + 10, a.y + a.height / 2 + 10, { steps: 3 });
+      await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 12 });
+      await page.mouse.up();
+    };
+    await drag(chip('Post A'), cell(16));
+    await expect(cell(16).getByRole('button', { name: /Post A/ })).toBeVisible();
+    await expect(cell(15).getByRole('button', { name: /Post A/ })).toHaveCount(0);
+    await page.reload();
+    await expect(cell(16).getByRole('button', { name: /Post A/ })).toBeVisible(); // persistiu (versão incrementada)
+    // na visão semanal a grade é curta: o item sem data e o dia de hoje cabem na tela ao mesmo tempo
+    await page.getByRole('button', { name: 'Week', exact: true }).click();
+    await drag(chip('Ideia solta'), cell(now.getDate()));
+    await expect(cell(now.getDate()).getByRole('button', { name: /Ideia solta/ })).toBeVisible();
+    await drag(chip('Ideia solta'), page.getByTestId('day:none'));
+    await expect(page.getByTestId('day:none').getByRole('button', { name: /Ideia solta/ })).toBeVisible();
+    await page.getByRole('button', { name: 'Month', exact: true }).click();
+  } else {
+    // no celular o caminho é o formulário (acessível, sem arrastar)
+    await chip('Post A').click();
+    await page.getByRole('form', { name: 'Edit calendar item' }).getByLabel('Date').fill(ymd(16));
+    await page.getByRole('form', { name: 'Edit calendar item' }).getByRole('button', { name: 'Save changes' }).click();
+    await expect(cell(16).getByRole('button', { name: /Post A/ })).toBeVisible();
+  }
+
+  // edição por formulário: status
+  await chip('Post A').click();
+  const edit = page.getByRole('form', { name: 'Edit calendar item' });
+  await edit.getByLabel('Status').selectOption('review');
+  await edit.getByRole('button', { name: 'Save changes' }).click();
+  await expect(chip('Post A')).toContainText('review');
+
+  // semana
+  await page.getByRole('button', { name: 'Week', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Week', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'Month', exact: true }).click();
+  await expect(cell(16).getByRole('button', { name: /Post A/ })).toBeVisible();
+});
+
+test('brand kit e compartilhamento: confirmação, página pública só com o escolhido, log e revogação', async ({ page, browser }) => {
+  await register(page, `shr-${uniq()}@example.com`);
+  const ws = await wsOf(page, 'personal');
+  const seeded = await seedContent(page, ws);
+
+  await page.getByRole("link", { name: /^Calendar and brand kit of/ }).click();
+  await page.getByRole('tab', { name: 'Brand kit' }).click();
+  await page.getByLabel('Logo URL (https)').fill('http://inseguro.example.com/logo.png');
+  await page.getByLabel('Brand name').fill('Marca Solar');
+  await page.getByLabel('Primary color (#rrggbb)').fill('#1a73e8');
+  await page.getByRole('button', { name: 'Save changes' }).click();
+  await expect(page.getByRole('alert')).toContainText(/check the data/); // http é recusado (400)
+  await page.getByLabel('Logo URL (https)').fill('');
+  await page.getByRole('button', { name: 'Save changes' }).click();
+  await expect(page.getByText('Saved.')).toBeVisible();
+
+  await page.getByRole('tab', { name: 'Sharing' }).click();
+  await page.getByLabel(/Título público/).check();
+  await page.getByRole('button', { name: 'Review and create link' }).click();
+  const dialog = page.getByRole('alertdialog');
+  await expect(dialog).toContainText('Anyone with this link can read the items below without signing in');
+  await expect(dialog).toContainText('Título público');
+  await expect(dialog).not.toContainText('Título interno');
+  await expect(dialog).toContainText('never shows the source text');
+  await dialog.getByRole('button', { name: 'I understand, create the link' }).click();
+  const url = await page.getByLabel('Shared link', { exact: true }).inputValue();
+  expect(url).toMatch(/\/s\/[\w-]{40,}$/);
+
+  // visitante anônimo (sem cookies)
+  const anon = await (await browser.newContext()).newPage();
+  const res = await anon.goto(url);
+  expect(res?.headers()['x-robots-tag']).toMatch(/noindex/);
+  expect(res?.headers()['referrer-policy']).toBe('no-referrer');
+  await expect(anon.getByRole('heading', { level: 1, name: 'Marca Solar' })).toBeVisible();
+  await expect(anon.getByText('Corpo escolhido para o cliente.')).toBeVisible();
+  const text = await anon.locator('body').innerText();
+  expect(text).not.toContain('TEXTO-FONTE-PRIVADO');
+  expect(text).not.toContain('Rascunho que não será compartilhado');
+  expect(text).not.toContain('Título interno');
+
+  // log de acesso e revogação
+  await page.getByRole('button', { name: 'Access log' }).click();
+  await expect(page.getByRole('list', { name: 'Access log' }).getByRole('listitem')).toHaveCount(1);
+  page.once('dialog', (d) => void d.accept());
+  await page.getByRole('button', { name: 'Revoke', exact: true }).click();
+  await expect(page.getByText('revoked').first()).toBeVisible();
+  await anon.reload();
+  await expect(anon.getByText(/does not exist, expired or was revoked/)).toBeVisible();
+  expect(seeded.outs).toHaveLength(2);
+});
+
+test('isolamento Fase 6: B não acessa membros, convites, calendário, brand kit nem links de A (404)', async ({ browser }) => {
+  const a = await (await browser.newContext()).newPage();
+  const b = await (await browser.newContext()).newPage();
+  await register(a, `ia-${uniq()}@example.com`);
+  await register(b, `ib-${uniq()}@example.com`);
+  const ws = await wsOf(a, 'personal');
+  const s = await seedContent(a, ws);
+  const link = await (await apiOf(a).send('post', `${s.base}/shared-links`, { outputIds: [s.outs[0]!.id] })).json();
+  const entry = await (await apiOf(a).send('post', `${s.base}/calendar`, { title: 'x' })).json();
+  for (const path of [`/api/workspaces/${ws}/members`, `/api/workspaces/${ws}/invites`, `/api/workspaces/${ws}/approvals`, `${s.base}/calendar`, `${s.base}/brand-kit`, `${s.base}/shared-links`, `${s.base}/outputs`, `${s.base}/shared-links/${link.id}/access-logs`]) {
+    expect((await b.request.get(path)).status(), path).toBe(404);
+  }
+  expect((await apiOf(b).send('patch', `${s.base}/calendar/${entry.id}`, { title: 'invadido', version: 1 })).status()).toBe(404);
+  expect((await apiOf(b).send('delete', `${s.base}/shared-links/${link.id}`)).status()).toBe(404);
+  expect((await apiOf(b).send('put', `${s.base}/brand-kit`, { name: 'hack' })).status()).toBe(404);
+  // o link público de A continua funcionando para quem tem o token (é o propósito), mas só mostra o escolhido
+  const pub = await (await b.request.get(`/api/shared/${link.path.split('/s/')[1]}`)).json();
+  expect(pub.outputs).toHaveLength(1);
+});

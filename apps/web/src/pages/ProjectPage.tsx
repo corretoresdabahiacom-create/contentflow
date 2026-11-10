@@ -18,6 +18,7 @@ import {
   type ExportFormat,
 } from '@contentflow/shared';
 import { ClipsPanel } from '../components/ClipsPanel';
+import { ApprovalControls, type Approval } from '../components/Approvals';
 import { ErrorNote } from '../components/ErrorNote';
 import { TranscriptPanel } from '../components/TranscriptPanel';
 import { api, ApiRequestError } from '../lib/api';
@@ -31,7 +32,7 @@ type ProjectDetail = {
   source: { kind: string; filename: string | null; chars: number; text: string; analysis: Analysis | null } | null;
 };
 
-function OutputCard({ o, url, onChanged }: { o: Output; url: string; onChanged: () => void }) {
+function OutputCard({ o, url, onChanged, approval }: { o: Output; url: string; onChanged: () => void; approval?: Approval }) {
   const { t } = useTranslation();
   const [body, setBody] = useState(o.body);
   useEffect(() => setBody(o.body), [o.body, o.version]);
@@ -64,17 +65,18 @@ function OutputCard({ o, url, onChanged }: { o: Output; url: string; onChanged: 
         </button>
         <button className="btn btn-secondary" onClick={() => del.mutate()}>{t('ws.delete')}</button>
       </div>
+      <ApprovalControls url={url} outputId={o.id} version={o.version} approval={approval} onChanged={onChanged} />
       <ErrorNote error={save.error ?? del.error} />
     </article>
   );
 }
 
 export function ProjectPage() {
-  const { clientId = '', projectId = '' } = useParams();
+  const { ws: wsParam, clientId = '', projectId = '' } = useParams();
   const { t } = useTranslation();
   const qc = useQueryClient();
   const me = useMe();
-  const ws = me.data?.workspaces[0]?.id;
+  const ws = wsParam ?? me.data?.workspaces[0]?.id; // rota antiga (sem workspace) usa o primeiro
   const url = `/api/workspaces/${ws}/clients/${clientId}/projects/${projectId}`;
   const [text, setText] = useState('');
   const [kind, setKind] = useState<'paste' | FileKind>('paste');
@@ -84,6 +86,7 @@ export function ProjectPage() {
 
   const project = useQuery({ queryKey: ['project', projectId], enabled: !!ws, queryFn: () => api<ProjectDetail>(url) });
   const outputs = useQuery({ queryKey: ['outputs', projectId], enabled: !!ws, queryFn: () => api<{ outputs: Output[] }>(`${url}/outputs`) });
+  const approvals = useQuery({ queryKey: ['proj-approvals', projectId], enabled: !!ws, queryFn: () => api<{ approvals: Approval[] }>(`${url}/approvals`) });
   useEffect(() => {
     if (project.data && !loaded.current) {
       loaded.current = true;
@@ -95,6 +98,7 @@ export function ProjectPage() {
   const refresh = () => {
     void qc.invalidateQueries({ queryKey: ['outputs', projectId] });
     void qc.invalidateQueries({ queryKey: ['project', projectId] });
+    void qc.invalidateQueries({ queryKey: ['proj-approvals', projectId] });
   };
 
   const analyze = useMutation({
@@ -233,7 +237,7 @@ export function ProjectPage() {
         <p className="text-sm text-neutral-600 dark:text-neutral-400">{t('project.outputsHint')}</p>
         {outputs.data?.outputs.length === 0 && <p className="text-sm">{t('project.noOutputs')}</p>}
         <div className="grid gap-4">
-          {outputs.data?.outputs.map((o) => <OutputCard key={o.id} o={o} url={url} onChanged={refresh} />)}
+          {outputs.data?.outputs.map((o) => <OutputCard key={o.id} o={o} url={url} onChanged={refresh} approval={approvals.data?.approvals.find((a) => a.outputId === o.id)} />)}
         </div>
       </div>
 

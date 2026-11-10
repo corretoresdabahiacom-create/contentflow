@@ -2,7 +2,7 @@
 
 > Documento público, gerado a partir de `apps/web/src/limitations/data.ts`. **Não edite este arquivo diretamente.** Rode `pnpm gen:limitations`.
 
-**Versão:** 0.6.0 · **Última atualização:** 2026-11-10
+**Versão:** 0.7.0 · **Última atualização:** 2026-11-10
 
 ## Sumário
 
@@ -26,6 +26,10 @@
 - [Retenção de dados](#limitacao-retencao-de-dados) — _Limitado_
 - [Compatibilidade de navegador](#limitacao-compatibilidade-de-navegador) — _Limitado_
 - [Direitos sobre o conteúdo enviado](#limitacao-direitos-sobre-o-conteudo) — _Limitado_
+- [Convites por link (sem e-mail)](#limitacao-convites-por-link-sem-email) — _Limitado_
+- [Compartilhamento por link público](#limitacao-compartilhamento-por-link-publico) — _Limitado_
+- [Permissões por cliente](#limitacao-permissoes-por-cliente) — _Indisponível_
+- [Calendário editorial: só planejamento](#limitacao-calendario-sem-publicacao-e-sem-offline) — _Limitado_
 - [Denúncias e moderação](#limitacao-denuncias-e-moderacao) — _Limitado_
 
 <a id="limitacao-transcricao-de-audio-video-no-servidor"></a>
@@ -333,6 +337,67 @@ O produto não verifica direitos autorais. Ao enviar, você confirma que possui 
 
 - Enviar apenas conteúdo próprio ou autorizado.
 - Denunciar conteúdo indevido em /report.
+
+<a id="limitacao-convites-por-link-sem-email"></a>
+
+## Convites por link (sem e-mail)
+
+**Status:** Limitado
+
+O ContentFlow não envia e-mail: o convite é um link que você mesmo entrega. O link vale uma vez, expira (até 30 dias) e só aparece na hora da criação; quem abrir precisa estar logado. Quem tiver o link antes da pessoa certa pode entrar no lugar dela, então envie por um canal que você confia e revogue se desconfiar.
+
+**O que você pode fazer:**
+
+- Enviar o link por mensagem direta e revogar em Equipe se ele vazar.
+- Usar a validade mais curta que couber no seu caso.
+
+_Referência interna:_ `docs/team-calendar.md#convites`
+
+<a id="limitacao-compartilhamento-por-link-publico"></a>
+
+## Compartilhamento por link público
+
+**Status:** Limitado
+
+O link compartilhado não exige login: qualquer pessoa com o endereço lê os outputs escolhidos e o brand kit até o link expirar (até 30 dias) ou ser revogado. Nunca expõe texto-fonte, transcrição, áudio, vídeo, cortes nem outros outputs. Não há aprovação do cliente nem comentários, e o registro de acessos mostra só um identificador anônimo do visitante e o navegador, sem identificar pessoas. O logo do brand kit é carregado do endereço https que você informou, então quem abre o link faz uma requisição a esse site.
+
+**O que você pode fazer:**
+
+- Exportar o conteúdo (TXT, MD, CSV, JSON) e enviar por um canal privado.
+- Revogar o link assim que o cliente responder.
+
+_Referência interna:_ `docs/team-calendar.md#compartilhamento`
+
+<a id="limitacao-permissoes-por-cliente"></a>
+
+## Permissões por cliente
+
+**Status:** Indisponível
+
+O isolamento entre clients vale para os dados (um client nunca lê nem altera dados de outro por engano de rota) mas não para pessoas: todo membro do workspace enxerga todos os clients dele. Não existe acesso restrito a clients específicos.
+
+**O que você pode fazer:**
+
+- Criar um workspace de equipe separado para cada grupo que não deve ver os outros clients.
+
+_Referência interna:_ `docs/team-calendar.md#isolamento`
+
+<a id="limitacao-calendario-sem-publicacao-e-sem-offline"></a>
+
+## Calendário editorial: só planejamento
+
+**Status:** Limitado
+
+O calendário organiza pautas por dia (sem horário e sem fuso), com status e responsável, e nada é publicado: o status "publicado" é uma marcação sua. A edição offline do calendário ainda não existe; sem conexão a tela mostra o aviso e as alterações não são salvas.
+
+**O que você pode fazer:**
+
+- Postar manualmente na plataforma e marcar como publicado.
+- Editar o calendário quando estiver online.
+
+**Ver também:** [Publicação automática em redes sociais](#limitacao-publicacao-automatica-em-redes-sociais)
+
+_Referência interna:_ `docs/team-calendar.md#calendario`
 
 <a id="limitacao-denuncias-e-moderacao"></a>
 

@@ -29,7 +29,7 @@ function Projects({ ws, client, canAdmin }: { ws: string; client: Client; canAdm
       <ul className="space-y-1">
         {list.data?.projects.map((p) => (
           <li key={p.id} className="flex items-center justify-between gap-2 text-sm">
-            <Link to={`/app/clients/${client.id}/projects/${p.id}`}>{p.name}</Link>
+            <Link to={`/app/w/${ws}/clients/${client.id}/projects/${p.id}`}>{p.name}</Link>
             <span className="flex items-center gap-2">
               {p.status === 'archived' && <span className="text-xs">{t('ws.archived')}</span>}
               {canAdmin && (
@@ -79,6 +79,7 @@ export function Workspace({ ws, role }: { ws: string; role: string }) {
         <section key={c.id} className="card" aria-label={c.name}>
           <div className="flex items-center justify-between">
             <h3 className="font-medium">{c.isImplicit ? t('ws.defaultClient') : c.name}</h3>
+            <Link className="text-xs underline" to={`/app/w/${ws}/clients/${c.id}`} aria-label={t('ws.clientTools', { name: c.isImplicit ? t('ws.defaultClient') : c.name })}>{t('ws.calendarBrand')}</Link>
             {canAdmin && !c.isImplicit && (
               <button
                 className="text-xs underline"

@@ -1,6 +1,6 @@
-import { and, inArray, lt } from 'drizzle-orm';
+import { and, inArray, isNotNull, lt, or } from 'drizzle-orm';
 import { makeDb } from '../db/client';
-import { processingJobs, rateLimitCounters, sessions } from '../db/schema';
+import { processingJobs, rateLimitCounters, sessions, sharedLinkAccessLogs, workspaceInvites } from '../db/schema';
 import { getIntSetting } from '../lib/settings';
 
 /** Cron horário. Poucos comandos: cabe nos 10 ms de CPU do Free. */
@@ -19,4 +19,10 @@ export async function cleanup(d1: D1Database, now = Date.now()) {
         lt(processingJobs.updatedAt, now - staleMs),
       ),
     );
+  // Privacidade/espaço: logs de acesso de links compartilhados e convites encerrados não ficam para sempre.
+  const logDays = await getIntSetting(db, 'shared_link.log_retention_days', 90);
+  await db.delete(sharedLinkAccessLogs).where(lt(sharedLinkAccessLogs.accessedAt, now - logDays * 86_400_000));
+  await db
+    .delete(workspaceInvites)
+    .where(or(lt(workspaceInvites.expiresAt, now - 30 * 86_400_000), and(isNotNull(workspaceInvites.revokedAt), lt(workspaceInvites.updatedAt, now - 30 * 86_400_000))));
 }

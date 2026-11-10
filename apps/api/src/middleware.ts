@@ -42,7 +42,7 @@ export const originGuard: MiddlewareHandler<AppEnv> = async (c, next) => {
 export const securityHeaders: MiddlewareHandler<AppEnv> = async (c, next) => {
   await next();
   c.header('X-Content-Type-Options', 'nosniff');
-  c.header('Referrer-Policy', 'strict-origin-when-cross-origin');
+  if (!c.res.headers.has('Referrer-Policy')) c.header('Referrer-Policy', 'strict-origin-when-cross-origin'); // rotas públicas podem pedir no-referrer
   c.header('Cache-Control', 'no-store');
   c.header('X-Frame-Options', 'DENY');
 };

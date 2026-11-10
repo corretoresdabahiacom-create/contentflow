@@ -42,6 +42,14 @@ Não-membro de workspace recebe 404 (não revela existência); papel insuficient
 - Os cortes são calculados no navegador, então um cliente pode gravar justificativa/sinais falsos **no próprio projeto** (mesmo trade-off da análise de texto); nenhum outro tenant é afetado. O servidor valida intervalo, tamanhos, `origin` e que `transcriptId` pertence ao mesmo projeto e workspace (404 caso contrário).
 - Edição de corte usa `version`; regenerar nunca apaga cortes manuais ou editados. Canais são uma lista fechada; `source_kind` das saídas continua forçado a `template` no servidor.
 
+## Equipes, convites e links públicos (Fase 6)
+- Tokens de convite e de link compartilhado têm 256 bits aleatórios, aparecem uma vez e só o SHA-256 fica no banco. Inválido, expirado, revogado e usado dão a mesma resposta 404.
+- O link público devolve só os outputs escolhidos e o brand kit (teste verifica que o texto-fonte e outros outputs não aparecem). Cabeçalhos `noindex` e `no-referrer` nas rotas `/s/*`, `/invite/*` e `/api/shared/*`.
+- Registro de acesso minimiza dados: hash do IP com pepper e `User-Agent` truncado; dedupe de 10 min; retenção de 90 dias.
+- `img-src` da CSP agora permite `https:` para o logo do brand kit. Imagens não executam código; o custo é que quem abre uma página com logo faz uma requisição ao host informado pelo admin (o logo só aceita https, sem credenciais, sem IP/`localhost`).
+- Separação de papéis nas aprovações e proteção de versão (decisão só vale para a versão pedida).
+- Risco aceito: sem permissões por client (todo membro vê todos os clients do workspace).
+
 ## Headers e dados
 API: `X-Content-Type-Options`, `X-Frame-Options: DENY`, `Referrer-Policy`, `Cache-Control: no-store`. Frontend (`apps/web/public/_headers`): CSP restritiva (só `self` e `challenges.cloudflare.com`). O service worker **não** faz cache de `/api` nem de dados privados; só do shell e assets. Logs de auditoria guardam IP com hash, nunca o IP, a senha ou a chave. Lint (`no-restricted-syntax`) proíbe gravar credenciais em storage.
 

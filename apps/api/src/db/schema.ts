@@ -164,7 +164,7 @@ export const brandKits = sqliteTable(
     tone: text('tone'),
     ...ts(),
   },
-  (t) => [index('brand_kits_client_idx').on(t.clientId)],
+  (t) => [index('brand_kits_client_idx').on(t.clientId), uniqueIndex('brand_kits_client_uq').on(t.clientId)],
 );
 
 // ---------- projetos e mídia (metadados) ----------
@@ -460,6 +460,8 @@ export const approvals = sqliteTable(
     outputId: text('output_id')
       .notNull()
       .references(() => contentOutputs.id, { onDelete: 'cascade' }),
+    /** Versão do output no momento do pedido: a decisão só vale para essa versão. */
+    outputVersion: integer('output_version').notNull().default(1),
     requestedBy: text('requested_by')
       .notNull()
       .references(() => users.id),

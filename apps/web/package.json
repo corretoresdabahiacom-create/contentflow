@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@contentflow/shared": "workspace:*",
+    "@dnd-kit/core": "^6.3.1",
     "@tanstack/react-query": "^5.107.1",
     "@xenova/transformers": "2.17.2",
     "clsx": "^2.1.1",

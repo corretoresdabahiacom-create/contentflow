@@ -72,7 +72,8 @@
     "uploads": "Media upload",
     "uploadsOff": "Unavailable",
     "ok": "Configured",
-    "clients": "Clients and projects"
+    "clients": "Clients and projects",
+    "activeWorkspace": "Active workspace"
   },
   "notFound": "Page not found.",
   "ws": {
@@ -86,7 +87,9 @@
     "createProject": "Create project",
     "clientName": "Client name",
     "createClient": "Create client",
-    "defaultClient": "My projects"
+    "defaultClient": "My projects",
+    "clientTools": "Calendar and brand kit of {{name}}",
+    "calendarBrand": "Calendar, brand and sharing"
   },
   "project": {
     "source": "Source text",
@@ -256,5 +259,155 @@
     "generate": "Generate for selected channels",
     "limit": "{{n}} / {{max}} characters (approx. limit)",
     "over": "Over the approximate limit for this channel."
+  },
+  "team": {
+    "heading": "Team",
+    "back": "Back to dashboard",
+    "notFound": "Not found.",
+    "personalNote": "This is your personal workspace: it only has you. Create a team workspace on the dashboard to invite people.",
+    "members": "Members",
+    "you": "you",
+    "roleOf": "Role of {{email}}",
+    "leave": "Leave",
+    "remove": "Remove",
+    "confirmLeave": "Leave this workspace?",
+    "confirmRemove": "Remove {{email}} from this workspace?",
+    "invites": "Invite links",
+    "inviteHelp": "Create a link and send it yourself (there is no e-mail from ContentFlow). The link works once, expires, and the person must be signed in to accept. The link is shown only now.",
+    "inviteRole": "Role",
+    "inviteDays": "Valid for (days)",
+    "createInvite": "Create invite link",
+    "newLink": "New invite link",
+    "linkField": "Invite link",
+    "linkOnce": "Copy it now: it will not be shown again. Anyone who opens it while signed in can join, once.",
+    "copy": "Copy",
+    "noInvites": "No pending invites.",
+    "pendingInvite": "Pending invite ({{role}}), expires {{date}}",
+    "revoke": "Revoke",
+    "create": "Create team workspace",
+    "createName": "Team workspace name",
+    "open": "Team, members and invites"
+  },
+  "invite": {
+    "heading": "Workspace invite",
+    "needLogin": "Sign in or create an account to accept this invite.",
+    "reopen": "After signing in, open this link again.",
+    "invalid": "This invite is invalid, expired, revoked or already used.",
+    "body": "You were invited to join “{{name}}” as {{role}}.",
+    "already": "You are already a member of this workspace.",
+    "accept": "Accept invite"
+  },
+  "client": {
+    "heading": "Client",
+    "tab": {
+      "calendar": "Editorial calendar",
+      "brand": "Brand kit",
+      "share": "Sharing"
+    }
+  },
+  "brand": {
+    "heading": "Brand kit",
+    "name": "Brand name",
+    "logo": "Logo URL (https)",
+    "logoHelp": "Files are not stored: paste the public https address of an image. Viewers of shared links will load it from that address.",
+    "logoPreview": "Logo preview",
+    "color": "Primary color (#rrggbb)",
+    "badColor": "Use the format #rrggbb.",
+    "tone": "Tone of voice",
+    "readOnly": "Only owners and admins can edit the brand kit.",
+    "saved": "Saved."
+  },
+  "cal": {
+    "heading": "Editorial calendar",
+    "help": "Planning only: dates have no time of day and nothing is published automatically. Status is yours to set.",
+    "month": "Month",
+    "week": "Week",
+    "today": "Today",
+    "prev": "Previous",
+    "next": "Next",
+    "grid": "Calendar grid",
+    "unscheduled": "Unscheduled",
+    "dragHelp": "Drag an item to another day (or focus it, press Space, use the arrow keys and Space again). You can also edit the date in the form.",
+    "entryLabel": "Calendar item: {{title}}",
+    "editHeading": "Edit calendar item",
+    "newHeading": "New calendar item",
+    "title": "Title",
+    "date": "Date",
+    "statusLabel": "Status",
+    "assignee": "Assignee",
+    "nobody": "Nobody",
+    "add": "Add to calendar",
+    "close": "Close",
+    "status": {
+      "idea": "idea",
+      "producing": "producing",
+      "review": "review",
+      "approved": "approved",
+      "scheduled": "scheduled",
+      "published": "published"
+    }
+  },
+  "share": {
+    "heading": "Share with a client",
+    "help": "A shared link lets anyone with the address read only the outputs you pick and the brand kit, without signing in.",
+    "pick": "Outputs to share",
+    "noOutputs": "No outputs for this client yet.",
+    "days": "Valid for (days, max 30)",
+    "review": "Review and create link",
+    "confirmHeading": "Confirm: create a public link",
+    "confirmPublic": "Anyone with this link can read the items below without signing in, for {{days}} days, unless you revoke it.",
+    "confirmBrand": "The brand kit of this client",
+    "confirmNever": "It never shows the source text, transcript, audio, video, clips or other outputs.",
+    "confirmCreate": "I understand, create the link",
+    "cancel": "Cancel",
+    "created": "Link created",
+    "linkField": "Shared link",
+    "linkOnce": "Copy it now: it will not be shown again. Valid until {{date}}.",
+    "links": "Existing links",
+    "noLinks": "No links yet.",
+    "linkItem": "Link created {{date}}",
+    "status": {
+      "active": "active",
+      "expired": "expired",
+      "revoked": "revoked"
+    },
+    "counts": "{{outputs}} outputs · {{views}} views",
+    "expires": "expires {{date}}",
+    "logs": "Access log",
+    "noLogs": "No access yet.",
+    "revoke": "Revoke",
+    "confirmRevoke": "Revoke this link? It stops working immediately."
+  },
+  "appr": {
+    "heading": "Approvals",
+    "request": "Request approval",
+    "note": "Note (optional)",
+    "send": "Send request",
+    "state": {
+      "none": "not requested",
+      "pending": "approval pending",
+      "approved": "approved",
+      "rejected": "rejected",
+      "pendingStale": "changed after the request",
+      "approvedStale": "changed after approval",
+      "rejectedStale": "changed after rejection"
+    },
+    "inbox": "Pending approvals",
+    "none": "Nothing waiting for approval.",
+    "item": "Approval: {{title}}",
+    "by": "requested by {{email}}",
+    "stale": "This output changed after the request: it needs a new request.",
+    "decisionNote": "Decision note (optional)",
+    "approve": "Approve",
+    "reject": "Reject"
+  },
+  "shared": {
+    "heading": "Shared content",
+    "gone": "This link does not exist, expired or was revoked.",
+    "error": "Could not load this page.",
+    "tone": "Tone",
+    "note": "Shared via ContentFlow AI. This link expires on {{date}}.",
+    "empty": "Nothing to show.",
+    "footer": "Items marked template were generated from text templates, not by AI."
   }
 }

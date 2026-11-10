@@ -72,7 +72,8 @@
     "uploads": "Upload de mídia",
     "uploadsOff": "Indisponível",
     "ok": "Configurado",
-    "clients": "Clientes e projetos"
+    "clients": "Clientes e projetos",
+    "activeWorkspace": "Workspace ativo"
   },
   "notFound": "Página não encontrada.",
   "ws": {
@@ -86,7 +87,9 @@
     "createProject": "Criar projeto",
     "clientName": "Nome do cliente",
     "createClient": "Criar cliente",
-    "defaultClient": "Meus projetos"
+    "defaultClient": "Meus projetos",
+    "clientTools": "Calendário e brand kit de {{name}}",
+    "calendarBrand": "Calendário, marca e compartilhamento"
   },
   "project": {
     "source": "Texto-fonte",
@@ -256,5 +259,155 @@
     "generate": "Gerar para os canais selecionados",
     "limit": "{{n}} / {{max}} caracteres (limite aprox.)",
     "over": "Acima do limite aproximado deste canal."
+  },
+  "team": {
+    "heading": "Equipe",
+    "back": "Voltar ao painel",
+    "notFound": "Não encontrado.",
+    "personalNote": "Este é o seu workspace pessoal: só tem você. Crie um workspace de equipe no painel para convidar pessoas.",
+    "members": "Membros",
+    "you": "você",
+    "roleOf": "Papel de {{email}}",
+    "leave": "Sair",
+    "remove": "Remover",
+    "confirmLeave": "Sair deste workspace?",
+    "confirmRemove": "Remover {{email}} deste workspace?",
+    "invites": "Links de convite",
+    "inviteHelp": "Crie um link e envie você mesmo (o ContentFlow não envia e-mail). O link funciona uma vez, expira, e a pessoa precisa estar logada para aceitar. O link aparece só agora.",
+    "inviteRole": "Papel",
+    "inviteDays": "Validade (dias)",
+    "createInvite": "Criar link de convite",
+    "newLink": "Novo link de convite",
+    "linkField": "Link de convite",
+    "linkOnce": "Copie agora: ele não será mostrado de novo. Quem abrir logado pode entrar, uma única vez.",
+    "copy": "Copiar",
+    "noInvites": "Nenhum convite pendente.",
+    "pendingInvite": "Convite pendente ({{role}}), expira em {{date}}",
+    "revoke": "Revogar",
+    "create": "Criar workspace de equipe",
+    "createName": "Nome do workspace de equipe",
+    "open": "Equipe, membros e convites"
+  },
+  "invite": {
+    "heading": "Convite para workspace",
+    "needLogin": "Entre ou crie uma conta para aceitar este convite.",
+    "reopen": "Depois de entrar, abra este link de novo.",
+    "invalid": "Este convite é inválido, expirou, foi revogado ou já foi usado.",
+    "body": "Você foi convidado para entrar em “{{name}}” como {{role}}.",
+    "already": "Você já é membro deste workspace.",
+    "accept": "Aceitar convite"
+  },
+  "client": {
+    "heading": "Cliente",
+    "tab": {
+      "calendar": "Calendário editorial",
+      "brand": "Brand kit",
+      "share": "Compartilhamento"
+    }
+  },
+  "brand": {
+    "heading": "Brand kit",
+    "name": "Nome da marca",
+    "logo": "URL do logo (https)",
+    "logoHelp": "Arquivos não são guardados: cole o endereço https público de uma imagem. Quem abrir um link compartilhado vai carregá-la desse endereço.",
+    "logoPreview": "Prévia do logo",
+    "color": "Cor principal (#rrggbb)",
+    "badColor": "Use o formato #rrggbb.",
+    "tone": "Tom de voz",
+    "readOnly": "Só owner e admin editam o brand kit.",
+    "saved": "Salvo."
+  },
+  "cal": {
+    "heading": "Calendário editorial",
+    "help": "Só planejamento: as datas não têm horário e nada é publicado automaticamente. O status é você quem define.",
+    "month": "Mês",
+    "week": "Semana",
+    "today": "Hoje",
+    "prev": "Anterior",
+    "next": "Próximo",
+    "grid": "Grade do calendário",
+    "unscheduled": "Sem data",
+    "dragHelp": "Arraste um item para outro dia (ou foque nele, aperte Espaço, use as setas e Espaço de novo). Você também pode editar a data no formulário.",
+    "entryLabel": "Item do calendário: {{title}}",
+    "editHeading": "Editar item do calendário",
+    "newHeading": "Novo item do calendário",
+    "title": "Título",
+    "date": "Data",
+    "statusLabel": "Status",
+    "assignee": "Responsável",
+    "nobody": "Ninguém",
+    "add": "Adicionar ao calendário",
+    "close": "Fechar",
+    "status": {
+      "idea": "ideia",
+      "producing": "produzindo",
+      "review": "revisão",
+      "approved": "aprovado",
+      "scheduled": "agendado",
+      "published": "publicado"
+    }
+  },
+  "share": {
+    "heading": "Compartilhar com o cliente",
+    "help": "Um link compartilhado deixa qualquer pessoa com o endereço ler só os outputs que você escolher e o brand kit, sem login.",
+    "pick": "Outputs para compartilhar",
+    "noOutputs": "Este cliente ainda não tem outputs.",
+    "days": "Validade (dias, máx. 30)",
+    "review": "Revisar e criar link",
+    "confirmHeading": "Confirme: criar um link público",
+    "confirmPublic": "Qualquer pessoa com este link poderá ler os itens abaixo sem login, por {{days}} dias, a menos que você revogue.",
+    "confirmBrand": "O brand kit deste cliente",
+    "confirmNever": "Nunca mostra o texto-fonte, a transcrição, áudio, vídeo, cortes nem outros outputs.",
+    "confirmCreate": "Entendi, criar o link",
+    "cancel": "Cancelar",
+    "created": "Link criado",
+    "linkField": "Link compartilhado",
+    "linkOnce": "Copie agora: ele não será mostrado de novo. Válido até {{date}}.",
+    "links": "Links existentes",
+    "noLinks": "Nenhum link ainda.",
+    "linkItem": "Link criado em {{date}}",
+    "status": {
+      "active": "ativo",
+      "expired": "expirado",
+      "revoked": "revogado"
+    },
+    "counts": "{{outputs}} outputs · {{views}} acessos",
+    "expires": "expira em {{date}}",
+    "logs": "Registro de acessos",
+    "noLogs": "Nenhum acesso ainda.",
+    "revoke": "Revogar",
+    "confirmRevoke": "Revogar este link? Ele para de funcionar na hora."
+  },
+  "appr": {
+    "heading": "Aprovações",
+    "request": "Pedir aprovação",
+    "note": "Nota (opcional)",
+    "send": "Enviar pedido",
+    "state": {
+      "none": "sem pedido",
+      "pending": "aprovação pendente",
+      "approved": "aprovado",
+      "rejected": "rejeitado",
+      "pendingStale": "alterado depois do pedido",
+      "approvedStale": "alterado depois da aprovação",
+      "rejectedStale": "alterado depois da rejeição"
+    },
+    "inbox": "Aprovações pendentes",
+    "none": "Nada aguardando aprovação.",
+    "item": "Aprovação: {{title}}",
+    "by": "pedido por {{email}}",
+    "stale": "Este output mudou depois do pedido: precisa de um novo pedido.",
+    "decisionNote": "Nota da decisão (opcional)",
+    "approve": "Aprovar",
+    "reject": "Rejeitar"
+  },
+  "shared": {
+    "heading": "Conteúdo compartilhado",
+    "gone": "Este link não existe, expirou ou foi revogado.",
+    "error": "Não foi possível carregar esta página.",
+    "tone": "Tom",
+    "note": "Compartilhado via ContentFlow AI. Este link expira em {{date}}.",
+    "empty": "Nada para mostrar.",
+    "footer": "Itens marcados como template foram gerados a partir de modelos de texto, não por IA."
   }
 }

@@ -43,3 +43,11 @@ Identidade: `users`, `user_profiles`, `sessions`. Workspaces: `workspaces`, `wor
 ## Índices quentes
 
 `workspace_members(workspace_id, user_id)` único; `projects(workspace_id, client_id, created_at)`; `processing_jobs(status, created_at)` e `(status, next_attempt_at)`; `content_outputs(project_id, version)`; `audit_logs(workspace_id, created_at)`; `sessions(token_hash)` único e `(prev_token_hash)`.
+
+## Fase 6 (migração 0005)
+
+- `approvals.output_version` (versão do output no pedido) e índice único parcial `approvals_pending_uq` (um pedido pendente por output).
+- `brand_kits_client_uq`: um brand kit por client. `editorial_calendar_client_idx`: calendário por client e data.
+- `editorial_calendar.scheduled_for`: data sem horário (meia-noite UTC), ver `docs/team-calendar.md`.
+- Configurações novas em `system_settings`: `quota.workspaces_per_user`, `quota.calendar_per_workspace`, `quota.shared_links_per_workspace`, `shared_link.log_retention_days`.
+- Tabelas já existentes e agora usadas: `workspace_invites`, `brand_kits`, `editorial_calendar`, `approvals`, `shared_links`, `shared_link_outputs`, `shared_link_access_logs`.

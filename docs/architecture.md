@@ -28,3 +28,8 @@ packages/shared  (zod, constantes, derivação da chave de autenticação)
 ## Fase 4: transformação
 - Heurística de cortes (`transcript/clips.ts`) e templates por canal (`text/channels.ts`) são funções puras em `packages/shared`, rodando no navegador; o servidor só valida e persiste (cortes com `version`, saídas forçadas a `template`). Detalhes em `docs/clips.md` e `docs/export.md`.
 - A exportação ganhou SRT/VTT (da transcrição com timestamps) e `clips`/`transcript` no JSON, sem mudar o `schemaVersion`.
+
+## Fase 6: equipes, calendário e compartilhamento
+- Novas rotas em `apps/api/src/routes/{team,editorial,sharing}.ts`, registradas por `workspaces.ts`; `/api/invites` e `/api/shared` ficam fora do escopo de workspace (a segunda é pública, sem sessão, com rate limit e cabeçalhos `noindex`/`no-referrer`).
+- Tokens (convite e link) são aleatórios, mostrados uma vez e guardados só como SHA-256. Aprovações guardam a versão do output; calendário usa datas sem horário. Detalhes em `docs/team-calendar.md`.
+- Front: `@dnd-kit/core` apenas no calendário; página pública `/s/:token` renderizada fora do Layout.

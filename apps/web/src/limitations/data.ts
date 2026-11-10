@@ -262,6 +262,53 @@ export const limitations: readonly Limitation[] = [
     ],
   },
   {
+    id: 'convites-por-link-sem-email',
+    title: 'Convites por link (sem e-mail)',
+    status: 'limited',
+    reason:
+      'O ContentFlow não envia e-mail: o convite é um link que você mesmo entrega. O link vale uma vez, expira (até 30 dias) e só aparece na hora da criação; quem abrir precisa estar logado. Quem tiver o link antes da pessoa certa pode entrar no lugar dela, então envie por um canal que você confia e revogue se desconfiar.',
+    alternatives: [
+      'Enviar o link por mensagem direta e revogar em Equipe se ele vazar.',
+      'Usar a validade mais curta que couber no seu caso.',
+    ],
+    inlineNotice: 'Convites são links, sem e-mail.',
+    sourceDoc: 'docs/team-calendar.md#convites',
+  },
+  {
+    id: 'compartilhamento-por-link-publico',
+    title: 'Compartilhamento por link público',
+    status: 'limited',
+    reason:
+      'O link compartilhado não exige login: qualquer pessoa com o endereço lê os outputs escolhidos e o brand kit até o link expirar (até 30 dias) ou ser revogado. Nunca expõe texto-fonte, transcrição, áudio, vídeo, cortes nem outros outputs. Não há aprovação do cliente nem comentários, e o registro de acessos mostra só um identificador anônimo do visitante e o navegador, sem identificar pessoas. O logo do brand kit é carregado do endereço https que você informou, então quem abre o link faz uma requisição a esse site.',
+    alternatives: [
+      'Exportar o conteúdo (TXT, MD, CSV, JSON) e enviar por um canal privado.',
+      'Revogar o link assim que o cliente responder.',
+    ],
+    inlineNotice: 'Quem tem o link vê o conteúdo compartilhado, sem login.',
+    sourceDoc: 'docs/team-calendar.md#compartilhamento',
+  },
+  {
+    id: 'permissoes-por-cliente',
+    title: 'Permissões por cliente',
+    status: 'not_available',
+    reason:
+      'O isolamento entre clients vale para os dados (um client nunca lê nem altera dados de outro por engano de rota) mas não para pessoas: todo membro do workspace enxerga todos os clients dele. Não existe acesso restrito a clients específicos.',
+    alternatives: ['Criar um workspace de equipe separado para cada grupo que não deve ver os outros clients.'],
+    inlineNotice: 'Membros veem todos os clients do workspace.',
+    sourceDoc: 'docs/team-calendar.md#isolamento',
+  },
+  {
+    id: 'calendario-sem-publicacao-e-sem-offline',
+    title: 'Calendário editorial: só planejamento',
+    status: 'limited',
+    reason:
+      'O calendário organiza pautas por dia (sem horário e sem fuso), com status e responsável, e nada é publicado: o status "publicado" é uma marcação sua. A edição offline do calendário ainda não existe; sem conexão a tela mostra o aviso e as alterações não são salvas.',
+    alternatives: ['Postar manualmente na plataforma e marcar como publicado.', 'Editar o calendário quando estiver online.'],
+    inlineNotice: 'O calendário não publica nada.',
+    related: ['publicacao-automatica-em-redes-sociais'],
+    sourceDoc: 'docs/team-calendar.md#calendario',
+  },
+  {
     id: 'denuncias-e-moderacao',
     title: 'Denúncias e moderação',
     status: 'limited',
@@ -274,7 +321,7 @@ export const limitationsById: Record<string, Limitation> = Object.fromEntries(
   limitations.map((l) => [l.id, l]),
 );
 
-export const limitationsMeta = { version: '0.6.0', updatedAt: '2026-11-10' } as const;
+export const limitationsMeta = { version: '0.7.0', updatedAt: '2026-11-10' } as const;
 
 /** Id de âncora URL-safe. */
 export function anchorId(id: string): string {
