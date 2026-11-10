@@ -32,6 +32,12 @@ Não-membro de workspace recebe 404 (não revela existência); papel insuficient
 - A exportação CSV neutraliza injeção de fórmula; nomes de arquivo são higienizados.
 - Texto renderizado no React sem `dangerouslySetInnerHTML`; saídas editáveis aparecem só em `<textarea>`.
 
+## Transcrição (Fase 3)
+- Áudio **nunca** chega ao servidor: o player usa `blob:` URL local; os testes E2E verificam que nenhuma requisição não-GET carrega o arquivo. O servidor só recebe texto/segmentos, revalida (ordem, tempos, tamanhos) e **deriva o texto dos segmentos** em vez de confiar no texto enviado.
+- O rascunho em `processing_jobs.payload_json` é apagado ao concluir, cancelar, falhar ou por expiração (cron, 7 dias). Transições de estado são atômicas; ação fora de estado = 409.
+- **CSP (mudança):** `script-src` ganhou `'wasm-unsafe-eval'` (só permite compilar WebAssembly, não `eval` de JS); `connect-src` ganhou `huggingface.co`, `*.huggingface.co` e `*.hf.co` (download do modelo Whisper, só no modo WASM); `media-src 'self' blob:` para o player. Sem CDN de scripts: os `.wasm` do onnxruntime são servidos da mesma origem. Risco aceito: um XSS futuro poderia alcançar esses hosts de modelo; a superfície continua sem `unsafe-eval`/`unsafe-inline` em scripts.
+- Mobile fica bloqueado por padrão no modo WASM (proteção do dispositivo do usuário, não do servidor).
+
 ## Headers e dados
 API: `X-Content-Type-Options`, `X-Frame-Options: DENY`, `Referrer-Policy`, `Cache-Control: no-store`. Frontend (`apps/web/public/_headers`): CSP restritiva (só `self` e `challenges.cloudflare.com`). O service worker **não** faz cache de `/api` nem de dados privados; só do shell e assets. Logs de auditoria guardam IP com hash, nunca o IP, a senha ou a chave. Lint (`no-restricted-syntax`) proíbe gravar credenciais em storage.
 

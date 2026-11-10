@@ -54,7 +54,8 @@
     "quota_exceeded": "A free-plan quota was reached. Nothing was changed.",
     "version_conflict": "This item was changed elsewhere. It was reloaded; try again.",
     "not_found": "Not found.",
-    "forbidden": "Your role does not allow this."
+    "forbidden": "Your role does not allow this.",
+    "invalid_state": "This job is no longer in a state that allows this action. Reload the page."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -130,5 +131,87 @@
     "no_text": "No extractable text found. Scanned documents need OCR, which is not supported.",
     "too_long": "The text is longer than 200,000 characters.",
     "parse_failed": "Could not read this file. It may be corrupted or protected."
+  },
+  "tr": {
+    "title": "Transcription",
+    "hint": "Paste a transcript, import a .srt/.vtt file, or (optional, experimental) transcribe an audio file in your browser. The server never transcribes anything; it only stores the text you approve.",
+    "audio": "Audio file (optional)",
+    "audioLocal": "MP3, WAV, M4A or OGG. The audio stays on your computer: it is only used by the player below and by the optional in-browser mode. It is never uploaded.",
+    "audioError": "This browser cannot play this audio file.",
+    "duration": "Duration: {{time}}",
+    "modes": "Transcription mode",
+    "mode": {
+      "paste": "Paste text",
+      "subtitles": "Import SRT/VTT",
+      "wasm": "In your browser (experimental)"
+    },
+    "pasteLabel": "Transcript text",
+    "sendReview": "Send for review",
+    "subsLabel": "Subtitle file (.srt or .vtt)",
+    "wasmExperimental": "Experimental. It may fail or be slow, and it is never required.",
+    "wasmReqDownload": "Downloads a speech model to your browser the first time (about 40–80 MB, from Hugging Face).",
+    "wasmReqRam": "Needs about 4 GB of free memory; works best on a desktop with a stable connection.",
+    "wasmReqTime": "It can take 1–3 times the audio length, and the tab must stay open.",
+    "wasmReqQuality": "Small model: quality is low, especially for Portuguese and Spanish. Always review the text.",
+    "wasmReqLimit": "Audio up to {{min}} minutes.",
+    "wasmPrivacy": "Your audio is processed locally; only the text you approve is sent to the server.",
+    "wasmEstimate": "Rough estimate for this file: download {{dl}} MB (first time), {{t1}}–{{t2}} min.",
+    "wasmNeedAudio": "Choose an audio file above first.",
+    "wasmLang": "Spoken language",
+    "wasmStart": "Start transcription",
+    "wasmAbort": "Stop",
+    "wasmStatus": {
+      "decoding": "Reading audio…",
+      "loading_model": "Loading model…",
+      "transcribing": "Transcribing…"
+    },
+    "wasmErr": {
+      "wasm_unsupported": "This browser does not support it.",
+      "wasm_download_failed": "Could not download the model. Check your connection and try again.",
+      "wasm_out_of_memory": "Ran out of memory. Try a shorter file or close other tabs.",
+      "wasm_failed": "Transcription failed.",
+      "user_aborted": "Stopped."
+    },
+    "gate": {
+      "mobile": "Blocked by default on phones and tablets: it is slow and can crash the browser.",
+      "low_memory": "This device reports little memory (under 4 GB).",
+      "too_long": "This audio is longer than 10 minutes.",
+      "duration_unknown": "The audio duration is unknown; choose a playable file.",
+      "no_wasm": "This browser has no WebAssembly support.",
+      "no_audio_context": "This browser cannot decode audio for this mode.",
+      "accept": "I understand the risks and want to try anyway"
+    },
+    "openJobs": "Open jobs",
+    "status": {
+      "submitted": "submitted",
+      "validating": "validating",
+      "waiting_review": "waiting for review",
+      "running": "running in the browser"
+    },
+    "review": "Review",
+    "cancel": "Cancel",
+    "reviewTitle": "Review before saving",
+    "reviewHint": "Nothing is saved as a transcript until you approve. Text with timestamps cannot be edited here.",
+    "segments": "Segments",
+    "approve": "Approve and save",
+    "saved": "Saved transcripts",
+    "none": "No transcripts yet.",
+    "origin": {
+      "pasted": "pasted",
+      "srt": "SRT",
+      "vtt": "VTT",
+      "wasm": "browser (WASM)"
+    },
+    "confirmDelete": "Delete this transcript?",
+    "viewTitle": "Transcript",
+    "useAsSource": "Use as source text",
+    "reviewText": "Transcript text to review"
+  },
+  "subtitle": {
+    "empty": "The file is empty.",
+    "no_cues": "No subtitle cues found.",
+    "too_many_segments": "Too many cues (maximum 1,000).",
+    "too_long": "The text is longer than 200,000 characters.",
+    "invalid_timing": "A cue has invalid timestamps."
   }
 }

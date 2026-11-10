@@ -29,12 +29,27 @@ export const limitations: readonly Limitation[] = [
     alternatives: [
       'Colar a transcrição manualmente (recomendado).',
       'Enviar um arquivo .srt ou .vtt já pronto.',
-      'Usar transcrição no navegador (experimental, apenas desktop; o arquivo de áudio não sai do seu computador).',
+      'Usar transcrição no navegador (experimental, desktop; o áudio não sai do seu computador) — ver a limitação própria deste modo.',
       'Rodar Whisper localmente e importar o resultado — ver docs/self-host.md.',
     ],
     inlineNotice: 'Transcrição no servidor não está disponível.',
-    related: ['renderizacao-de-video', 'ia-externa', 'upload-de-midia'],
+    related: ['transcricao-no-navegador-wasm', 'renderizacao-de-video', 'ia-externa', 'upload-de-midia'],
     sourceDoc: 'docs/free-tier-limits.md#1-cloudflare-workers-free',
+  },
+  {
+    id: 'transcricao-no-navegador-wasm',
+    title: 'Transcrição no navegador (WASM, experimental)',
+    status: 'experimental',
+    reason:
+      'Um modelo Whisper pequeno roda no seu navegador, com o custo no seu dispositivo: baixa cerca de 40–80 MB na primeira vez (do Hugging Face), precisa de uns 4 GB de memória, leva de 1 a 3 vezes a duração do áudio e aceita até 10 minutos. A qualidade é baixa, principalmente em português e espanhol. Fica bloqueado por padrão em celulares e tablets. Este modo foi implementado e tem testes automáticos para os bloqueios e para a conversão de resultados, mas a transcrição de ponta a ponta ainda não foi executada em um navegador real (exige teste manual em desktop).',
+    alternatives: [
+      'Colar a transcrição (modo principal, sempre disponível).',
+      'Importar um arquivo .srt ou .vtt já pronto.',
+      'Rodar Whisper no seu computador e importar o resultado — ver docs/self-host.md.',
+    ],
+    inlineNotice: 'Transcrição no navegador é experimental, lenta e pode falhar; use só no desktop.',
+    related: ['transcricao-de-audio-video-no-servidor', 'upload-de-midia'],
+    sourceDoc: 'docs/transcription.md',
   },
   {
     id: 'renderizacao-de-video',
@@ -177,6 +192,8 @@ export const limitations: readonly Limitation[] = [
       { label: 'Armazenamento de arquivos', value: 'indisponível nesta fase' },
       { label: 'Projetos por workspace', value: '100' },
       { label: 'Transcrições por mês', value: '200' },
+      { label: 'Segmentos por transcrição (SRT/VTT/WASM)', value: '1.000' },
+      { label: 'Jobs de transcrição abertos por projeto', value: '5' },
       { label: 'Exportações por mês', value: '500' },
       { label: 'Membros por workspace', value: '10' },
       { label: 'Clientes por workspace (agência)', value: '10' },
@@ -242,7 +259,7 @@ export const limitationsById: Record<string, Limitation> = Object.fromEntries(
   limitations.map((l) => [l.id, l]),
 );
 
-export const limitationsMeta = { version: '0.3.0', updatedAt: '2026-11-09' } as const;
+export const limitationsMeta = { version: '0.4.0', updatedAt: '2026-11-09' } as const;
 
 /** Id de âncora URL-safe. */
 export function anchorId(id: string): string {

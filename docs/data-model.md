@@ -30,6 +30,11 @@ Identidade: `users`, `user_profiles`, `sessions`. Workspaces: `workspaces`, `wor
 - `sessions` guarda só o **hash** do token e o token anterior por 60 s após rotação.
 - Colunas de texto grandes (`transcripts.body_text`) respeitam o limite de 2 MB por linha do D1.
 
+## Fase 3 (migração 0003)
+- `processing_jobs` ganhou `payload_json` (rascunho em revisão, apagado ao concluir/cancelar/falhar), `origin` e `transcript_id` (FK `ON DELETE SET NULL`). Jobs de transcrição usam `kind='transcript'`.
+- `transcripts.body_text` guarda o texto; `transcript_segments` guarda `idx`, `start_ms`, `end_ms`, `text` (única por `(transcript_id, idx)`). Excluir a transcrição apaga os segmentos (cascade). Índice novo `transcripts(workspace_id)`.
+- Novas chaves em `system_settings`: `quota.transcripts_per_month` (200), `quota.active_jobs_per_project` (5), `job.stale_after_s` (604800).
+
 ## Índices quentes
 
 `workspace_members(workspace_id, user_id)` único; `projects(workspace_id, client_id, created_at)`; `processing_jobs(status, created_at)` e `(status, next_attempt_at)`; `content_outputs(project_id, version)`; `audit_logs(workspace_id, created_at)`; `sessions(token_hash)` único e `(prev_token_hash)`.

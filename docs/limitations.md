@@ -2,11 +2,12 @@
 
 > Documento público, gerado a partir de `apps/web/src/limitations/data.ts`. **Não edite este arquivo diretamente.** Rode `pnpm gen:limitations`.
 
-**Versão:** 0.3.0 · **Última atualização:** 2026-11-09
+**Versão:** 0.4.0 · **Última atualização:** 2026-11-09
 
 ## Sumário
 
 - [Transcrição de áudio/vídeo no servidor](#limitacao-transcricao-de-audio-video-no-servidor) — _Indisponível_
+- [Transcrição no navegador (WASM, experimental)](#limitacao-transcricao-no-navegador-wasm) — _Experimental_
 - [Renderização de vídeo](#limitacao-renderizacao-de-video) — _Indisponível_
 - [Upload e armazenamento de arquivos de mídia](#limitacao-upload-de-midia) — _Indisponível_
 - [Recuperação de senha por e-mail](#limitacao-recuperacao-de-senha) — _Indisponível_
@@ -38,12 +39,30 @@ Transcrição automática de mídia exige infraestrutura com GPU/CPU dedicada, i
 
 - Colar a transcrição manualmente (recomendado).
 - Enviar um arquivo .srt ou .vtt já pronto.
-- Usar transcrição no navegador (experimental, apenas desktop; o arquivo de áudio não sai do seu computador).
+- Usar transcrição no navegador (experimental, desktop; o áudio não sai do seu computador) — ver a limitação própria deste modo.
 - Rodar Whisper localmente e importar o resultado — ver docs/self-host.md.
 
-**Ver também:** [Renderização de vídeo](#limitacao-renderizacao-de-video), [Geração por IA generativa](#limitacao-ia-externa), [Upload e armazenamento de arquivos de mídia](#limitacao-upload-de-midia)
+**Ver também:** [Transcrição no navegador (WASM, experimental)](#limitacao-transcricao-no-navegador-wasm), [Renderização de vídeo](#limitacao-renderizacao-de-video), [Geração por IA generativa](#limitacao-ia-externa), [Upload e armazenamento de arquivos de mídia](#limitacao-upload-de-midia)
 
 _Referência interna:_ `docs/free-tier-limits.md#1-cloudflare-workers-free`
+
+<a id="limitacao-transcricao-no-navegador-wasm"></a>
+
+## Transcrição no navegador (WASM, experimental)
+
+**Status:** Experimental
+
+Um modelo Whisper pequeno roda no seu navegador, com o custo no seu dispositivo: baixa cerca de 40–80 MB na primeira vez (do Hugging Face), precisa de uns 4 GB de memória, leva de 1 a 3 vezes a duração do áudio e aceita até 10 minutos. A qualidade é baixa, principalmente em português e espanhol. Fica bloqueado por padrão em celulares e tablets. Este modo foi implementado e tem testes automáticos para os bloqueios e para a conversão de resultados, mas a transcrição de ponta a ponta ainda não foi executada em um navegador real (exige teste manual em desktop).
+
+**O que você pode fazer:**
+
+- Colar a transcrição (modo principal, sempre disponível).
+- Importar um arquivo .srt ou .vtt já pronto.
+- Rodar Whisper no seu computador e importar o resultado — ver docs/self-host.md.
+
+**Ver também:** [Transcrição de áudio/vídeo no servidor](#limitacao-transcricao-de-audio-video-no-servidor), [Upload e armazenamento de arquivos de mídia](#limitacao-upload-de-midia)
+
+_Referência interna:_ `docs/transcription.md`
 
 <a id="limitacao-renderizacao-de-video"></a>
 
@@ -223,6 +242,8 @@ O plano gratuito tem quotas para manter o custo operacional em zero. A capacidad
 | Armazenamento de arquivos | indisponível nesta fase |
 | Projetos por workspace | 100 |
 | Transcrições por mês | 200 |
+| Segmentos por transcrição (SRT/VTT/WASM) | 1.000 |
+| Jobs de transcrição abertos por projeto | 5 |
 | Exportações por mês | 500 |
 | Membros por workspace | 10 |
 | Clientes por workspace (agência) | 10 |

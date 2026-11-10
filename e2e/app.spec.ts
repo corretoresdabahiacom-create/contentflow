@@ -219,3 +219,138 @@ test('isolamento: B não acessa projeto/outputs/export de A (404)', async ({ bro
     expect((await b.request.get(path)).status(), path).toBe(404);
   }
 });
+
+// ---------- Fase 3: transcrição ----------
+function wavBuffer(seconds = 1, rate = 8000) {
+  const n = seconds * rate;
+  const b = Buffer.alloc(44 + n * 2);
+  b.write('RIFF', 0); b.writeUInt32LE(36 + n * 2, 4); b.write('WAVEfmt ', 8);
+  b.writeUInt32LE(16, 16); b.writeUInt16LE(1, 20); b.writeUInt16LE(1, 22);
+  b.writeUInt32LE(rate, 24); b.writeUInt32LE(rate * 2, 28); b.writeUInt16LE(2, 32); b.writeUInt16LE(16, 34);
+  b.write('data', 36); b.writeUInt32LE(n * 2, 40);
+  return b;
+}
+const SRT_FILE = `1
+00:00:00,000 --> 00:00:01,000
+Olá, bem-vindo ao canal.
+
+2
+00:00:01,000 --> 00:00:03,000
+Hoje falamos de energia solar.
+`;
+
+test('transcrição colada: revisão editável, aprovação e uso como texto-fonte', async ({ page }) => {
+  await register(page, `tr1-${uniq()}@example.com`);
+  await openNewProject(page, 'Podcast');
+  await page.getByLabel('Transcript text').fill('Bem-vindos ao episódio sobre energia solar no Brasil.');
+  await page.getByRole('button', { name: 'Send for review' }).click();
+
+  const review = page.getByLabel('Review before saving');
+  await expect(review).toBeVisible();
+  await review.getByRole('textbox').fill('Bem-vindos ao episódio revisado sobre energia solar.');
+  await review.getByRole('button', { name: 'Approve and save' }).click();
+
+  await expect(page.getByLabel('Transcript', { exact: true })).toContainText('episódio revisado');
+  await expect(page.getByRole('button', { name: /pasted|colada/i })).toBeVisible();
+  await page.getByRole('button', { name: 'Use as source text' }).click();
+  await expect(page.getByLabel('Text', { exact: true })).toHaveValue('Bem-vindos ao episódio revisado sobre energia solar.');
+
+  await page.reload(); // persistiu
+  await expect(page.getByRole('button', { name: /pasted/i })).toBeVisible();
+});
+
+test('cancelar na revisão não salva transcrição', async ({ page }) => {
+  await register(page, `tr2-${uniq()}@example.com`);
+  await openNewProject(page, 'Cancelar');
+  await page.getByLabel('Transcript text').fill('Rascunho que será descartado.');
+  await page.getByRole('button', { name: 'Send for review' }).click();
+  await page.getByLabel('Review before saving').getByRole('button', { name: 'Cancel' }).click();
+  await expect(page.getByText('No transcripts yet.')).toBeVisible();
+  await expect(page.getByLabel('Open jobs')).toHaveCount(0);
+});
+
+test('SRT: segmentos com timestamps, player local e exportação SRT/VTT', async ({ page }) => {
+  await register(page, `tr3-${uniq()}@example.com`);
+  await openNewProject(page, 'Legendas');
+
+  // áudio local (nunca enviado): nenhuma requisição leva o arquivo
+  const uploads: string[] = [];
+  page.on('request', (r) => { if (r.method() !== 'GET' && (r.postData() ?? '').includes('RIFF')) uploads.push(r.url()); });
+  await page.getByLabel('Audio file (optional)').setInputFiles({ name: 'ep.wav', mimeType: 'audio/wav', buffer: wavBuffer(3) });
+  await expect(page.locator('audio')).toBeVisible();
+  await expect(page.getByText(/Duration: 00:00:0[23]/)).toBeVisible();
+
+  await page.getByRole('tab', { name: 'Import SRT/VTT' }).click();
+  await page.getByLabel('Subtitle file (.srt or .vtt)').setInputFiles({ name: 'ep.srt', mimeType: 'application/x-subrip', buffer: Buffer.from(SRT_FILE) });
+  const review = page.getByLabel('Review before saving');
+  await expect(review.getByText('00:00:01.000')).toBeVisible();
+  await expect(review.getByRole('textbox')).toHaveCount(0); // com timestamps não edita
+  await review.getByRole('button', { name: 'Approve and save' }).click();
+
+  const view = page.getByLabel('Transcript', { exact: true });
+  await expect(view).toContainText('Hoje falamos de energia solar.');
+  await view.getByRole('button', { name: /Hoje falamos/ }).click(); // seek no player
+
+  const fs = await import('node:fs/promises');
+  const grab = async (name: string) => {
+    const [dl] = await Promise.all([page.waitForEvent('download'), view.getByRole('button', { name, exact: true }).click()]);
+    return fs.readFile((await dl.path()) as string, 'utf8');
+  };
+  expect(await grab('SRT')).toBe('1\n00:00:00,000 --> 00:00:01,000\nOlá, bem-vindo ao canal.\n\n2\n00:00:01,000 --> 00:00:03,000\nHoje falamos de energia solar.\n');
+  expect((await grab('VTT')).startsWith('WEBVTT\n\n00:00:00.000 --> 00:00:01.000\nOlá')).toBe(true);
+  expect(uploads).toEqual([]);
+});
+
+test('SRT inválido e áudio de tipo errado mostram erro claro', async ({ page }) => {
+  await register(page, `tr4-${uniq()}@example.com`);
+  await openNewProject(page, 'Erros');
+  await page.getByRole('tab', { name: 'Import SRT/VTT' }).click();
+  await page.getByLabel('Subtitle file (.srt or .vtt)').setInputFiles({ name: 'x.srt', mimeType: 'text/plain', buffer: Buffer.from('1\n00:00:05,000 --> 00:00:01,000\nx\n') });
+  await expect(page.getByRole('alert')).toContainText('invalid timestamps');
+  await page.getByLabel('Audio file (optional)').setInputFiles({ name: 'x.flac', mimeType: 'audio/flac', buffer: Buffer.from('fLaC') });
+  await expect(page.getByRole('alert').first()).toContainText('Unsupported file type');
+});
+
+test('WASM: requisitos visíveis; mobile bloqueado por padrão; sem áudio não inicia', async ({ page }, info) => {
+  await register(page, `tr5-${uniq()}@example.com`);
+  await openNewProject(page, 'Wasm');
+  await page.getByRole('tab', { name: 'In your browser (experimental)' }).click();
+  const box = page.getByLabel('In your browser (experimental)').last();
+  await expect(box).toContainText('Experimental');
+  await expect(box).toContainText('about 40–80 MB');
+  await expect(box).toContainText('4 GB');
+  await expect(box).toContainText('Always review the text');
+  const start = box.getByRole('button', { name: 'Start transcription' });
+  await expect(start).toBeDisabled();
+
+  await page.getByLabel('Audio file (optional)').setInputFiles({ name: 'a.wav', mimeType: 'audio/wav', buffer: wavBuffer(2) });
+  await expect(box.getByText(/Rough estimate/)).toBeVisible();
+  if (info.project.name === 'mobile') {
+    await expect(box.getByRole('alert')).toContainText('Blocked by default on phones');
+    await expect(start).toBeDisabled();
+    await box.getByLabel('I understand the risks and want to try anyway').check();
+    await expect(start).toBeEnabled();
+  } else {
+    await expect(start).toBeEnabled();
+  }
+  // nenhum job foi criado só por abrir a aba
+  const ws = (await (await page.request.get('/api/auth/me')).json()).workspaces[0].id;
+  expect(ws).toBeTruthy();
+});
+
+test('isolamento: B não acessa transcrições/jobs de A (404)', async ({ browser }) => {
+  const a = await (await browser.newContext()).newPage();
+  const b = await (await browser.newContext()).newPage();
+  await register(a, `ta-${uniq()}@example.com`);
+  await register(b, `tb-${uniq()}@example.com`);
+  const wsA = (await (await a.request.get('/api/auth/me')).json()).workspaces[0].id as string;
+  const cl = (await (await a.request.get(`/api/workspaces/${wsA}/clients`)).json()).clients[0].id as string;
+  const base = `/api/workspaces/${wsA}/clients/${cl}`;
+  const origin = { Origin: new URL(a.url()).origin };
+  const proj = await (await a.request.post(`${base}/projects`, { data: { name: 'p' }, headers: origin })).json();
+  const job = await (await a.request.post(`${base}/projects/${proj.id}/transcript-jobs`, { data: { origin: 'pasted', text: 'segredo' }, headers: origin })).json();
+  const done = await (await a.request.post(`${base}/projects/${proj.id}/transcript-jobs/${job.id}/approve`, { data: {}, headers: origin })).json();
+  for (const path of [`/transcript-jobs`, `/transcript-jobs/${job.id}`, `/transcripts`, `/transcripts/${done.transcriptId}`]) {
+    expect((await b.request.get(`${base}/projects/${proj.id}${path}`)).status(), path).toBe(404);
+  }
+});

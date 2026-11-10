@@ -1,4 +1,4 @@
-# Arquitetura (Fases 1–2)
+# Arquitetura (Fases 1–3)
 
 ```
 apps/web  (React + Vite + Tailwind, PWA)   ──build──►  apps/web/dist
@@ -19,3 +19,8 @@ packages/shared  (zod, constantes, derivação da chave de autenticação)
 - **Motor de texto:** idioma (`franc-min`: por/eng/spa), palavras-chave (implementação própria *inspirada* em YAKE, rotulada `yake-inspired@1`, sem alegar equivalência), resumo extrativo (TextRank sobre similaridade de cosseno TF-IDF, `textrank-tfidf@1`). Stopwords em pt/en/es.
 - **Templates:** placeholders `{{titulo}}`, `{{trecho}}`, `{{keywords}}`, `{{cta}}` (mais `{{resumo}}`), catálogo pt/en conforme o idioma detectado; 7 tipos: título, descrição, legenda, roteiro, artigo, newsletter, post. Toda saída é `source_kind='template'`, definido pelo servidor.
 - **Fluxo de dados:** `PUT .../source` (texto + análise) → `POST .../outputs` (lote) → `PATCH .../outputs/:id` (bloqueio otimista por `version`) → `GET .../export-data` (conta a quota mensal) → serialização local. Detalhes do formato em `docs/export.md`.
+
+## Fase 3: transcrição
+- Pipeline de `processing_jobs` com estados persistidos (colada/SRT/VTT e WASM); o Worker só orquestra estados e valida, nunca processa mídia. Revisão humana antes de gravar. Detalhes e limites em `docs/transcription.md`.
+- Parser SRT/VTT próprio e sem dependências em `packages/shared` (usado pelo cliente e pelas regras de validação do servidor); serializadores SRT/VTT prontos para a Fase 4.
+- Modo WASM isolado em `apps/web/src/lib/wasm.ts` (import dinâmico; fora do cache de instalação do PWA). Lógica de bloqueio é função pura testada.

@@ -14,6 +14,7 @@ import {
   type ExportFormat,
 } from '@contentflow/shared';
 import { ErrorNote } from '../components/ErrorNote';
+import { TranscriptPanel } from '../components/TranscriptPanel';
 import { api, ApiRequestError } from '../lib/api';
 import { ACCEPT, readSourceFile, type FileKind } from '../lib/readers';
 import { useMe } from '../lib/session';
@@ -151,6 +152,16 @@ export function ProjectPage() {
         </button>
         <ErrorNote error={analyze.error} />
       </div>
+
+      <TranscriptPanel
+        url={url}
+        onUseAsSource={(txt) => {
+          setText(txt);
+          setKind('paste');
+          setFilename(null);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+      />
 
       {a && (
         <div className="space-y-3" aria-label={t('project.analysis')}>

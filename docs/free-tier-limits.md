@@ -17,7 +17,8 @@ Regra: nenhum recurso é usado sem fonte e data nesta tabela. Valores abaixo for
 3. **Rate limit:** sem KV (1.000 escritas/dia). Turnstile mais contadores em D1 por janela, limites em `system_settings`.
 4. **Fila de jobs:** Cron (1 min) mais `processing_jobs`. Queues descartado (10 mil ops/dia, retenção de 24 h).
 5. **Fase 2 (2026-11-09):** nenhum serviço novo. Dependências de navegador gratuitas e sem rede (`franc-min`, `mammoth`, `unpdf`). Orçamento de escritas D1: criar saídas é 1 `batch` (conta como 1 consulta); cada edição = 1 escrita; cada exportação = 1 escrita em `usage_records` mais 1 em `audit_logs`. Quotas novas: 200 saídas por projeto e 500 exportações por mês por workspace.
-6. **Quotas ativas:** limites do D1 (500 MB por banco, 2 MB por linha). Quotas de arquivo (5 GB, 200 MB) desativadas.
+6. **Fase 3 (2026-11-09):** sem serviço novo no servidor. O modelo Whisper (Hugging Face, público, sem conta nem cartão) é baixado pelo navegador do usuário; o custo de banda e computação é do usuário e o modo é opcional. Orçamento de escritas D1: cada segmento = 1 escrita (máx. 1.000 por transcrição); aprovar uma transcrição cheia ≈ 1.010 escritas, portanto ≈ 100 transcrições completas/dia consomem todo o orçamento diário de escritas. Quota de 200 transcrições/mês por workspace; com muitos tenants a quota global diária do D1 é o limite real (documentado, não contornado).
+7. **Quotas ativas:** limites do D1 (500 MB por banco, 2 MB por linha). Quotas de arquivo (5 GB, 200 MB) desativadas.
 
 ## 1. Cloudflare Workers (Free)
 

@@ -54,7 +54,8 @@
     "quota_exceeded": "Uma quota do plano gratuito foi atingida. Nada foi alterado.",
     "version_conflict": "Este item foi alterado em outro lugar. Foi recarregado; tente de novo.",
     "not_found": "Não encontrado.",
-    "forbidden": "Seu papel não permite isso."
+    "forbidden": "Seu papel não permite isso.",
+    "invalid_state": "Este job não está mais em um estado que permite esta ação. Recarregue a página."
   },
   "dashboard": {
     "title": "Painel",
@@ -130,5 +131,87 @@
     "no_text": "Nenhum texto extraível. Documentos escaneados precisam de OCR, que não é suportado.",
     "too_long": "O texto tem mais de 200.000 caracteres.",
     "parse_failed": "Não foi possível ler este arquivo. Ele pode estar corrompido ou protegido."
+  },
+  "tr": {
+    "title": "Transcrição",
+    "hint": "Cole uma transcrição, importe um arquivo .srt/.vtt ou (opcional, experimental) transcreva um áudio no seu navegador. O servidor nunca transcreve nada; só guarda o texto que você aprovar.",
+    "audio": "Arquivo de áudio (opcional)",
+    "audioLocal": "MP3, WAV, M4A ou OGG. O áudio fica no seu computador: só é usado pelo player abaixo e pelo modo opcional no navegador. Nunca é enviado.",
+    "audioError": "Este navegador não consegue tocar este áudio.",
+    "duration": "Duração: {{time}}",
+    "modes": "Modo de transcrição",
+    "mode": {
+      "paste": "Colar texto",
+      "subtitles": "Importar SRT/VTT",
+      "wasm": "No navegador (experimental)"
+    },
+    "pasteLabel": "Texto da transcrição",
+    "sendReview": "Enviar para revisão",
+    "subsLabel": "Arquivo de legenda (.srt ou .vtt)",
+    "wasmExperimental": "Experimental. Pode falhar ou ser lento, e nunca é obrigatório.",
+    "wasmReqDownload": "Baixa um modelo de voz para o seu navegador na primeira vez (cerca de 40–80 MB, do Hugging Face).",
+    "wasmReqRam": "Precisa de cerca de 4 GB de memória livre; funciona melhor em desktop com conexão estável.",
+    "wasmReqTime": "Pode levar de 1 a 3 vezes a duração do áudio, e a aba precisa ficar aberta.",
+    "wasmReqQuality": "Modelo pequeno: a qualidade é baixa, principalmente em português e espanhol. Revise sempre o texto.",
+    "wasmReqLimit": "Áudio de até {{min}} minutos.",
+    "wasmPrivacy": "O áudio é processado localmente; só o texto aprovado vai para o servidor.",
+    "wasmEstimate": "Estimativa grosseira para este arquivo: download de {{dl}} MB (primeira vez), {{t1}}–{{t2}} min.",
+    "wasmNeedAudio": "Escolha um arquivo de áudio acima primeiro.",
+    "wasmLang": "Idioma falado",
+    "wasmStart": "Iniciar transcrição",
+    "wasmAbort": "Parar",
+    "wasmStatus": {
+      "decoding": "Lendo o áudio…",
+      "loading_model": "Carregando o modelo…",
+      "transcribing": "Transcrevendo…"
+    },
+    "wasmErr": {
+      "wasm_unsupported": "Este navegador não suporta.",
+      "wasm_download_failed": "Não foi possível baixar o modelo. Verifique a conexão e tente de novo.",
+      "wasm_out_of_memory": "Faltou memória. Tente um arquivo menor ou feche outras abas.",
+      "wasm_failed": "A transcrição falhou.",
+      "user_aborted": "Interrompido."
+    },
+    "gate": {
+      "mobile": "Bloqueado por padrão em celulares e tablets: é lento e pode travar o navegador.",
+      "low_memory": "Este dispositivo informa pouca memória (menos de 4 GB).",
+      "too_long": "Este áudio tem mais de 10 minutos.",
+      "duration_unknown": "A duração do áudio é desconhecida; escolha um arquivo que toque.",
+      "no_wasm": "Este navegador não tem suporte a WebAssembly.",
+      "no_audio_context": "Este navegador não consegue decodificar áudio neste modo.",
+      "accept": "Entendo os riscos e quero tentar mesmo assim"
+    },
+    "openJobs": "Jobs abertos",
+    "status": {
+      "submitted": "enviado",
+      "validating": "validando",
+      "waiting_review": "aguardando revisão",
+      "running": "rodando no navegador"
+    },
+    "review": "Revisar",
+    "cancel": "Cancelar",
+    "reviewTitle": "Revise antes de salvar",
+    "reviewHint": "Nada é salvo como transcrição até você aprovar. Texto com timestamps não pode ser editado aqui.",
+    "segments": "Segmentos",
+    "approve": "Aprovar e salvar",
+    "saved": "Transcrições salvas",
+    "none": "Nenhuma transcrição ainda.",
+    "origin": {
+      "pasted": "colada",
+      "srt": "SRT",
+      "vtt": "VTT",
+      "wasm": "navegador (WASM)"
+    },
+    "confirmDelete": "Excluir esta transcrição?",
+    "viewTitle": "Transcrição",
+    "useAsSource": "Usar como texto-fonte",
+    "reviewText": "Texto da transcrição para revisar"
+  },
+  "subtitle": {
+    "empty": "O arquivo está vazio.",
+    "no_cues": "Nenhuma legenda encontrada.",
+    "too_many_segments": "Legendas demais (máximo 1.000).",
+    "too_long": "O texto tem mais de 200.000 caracteres.",
+    "invalid_timing": "Uma legenda tem tempos inválidos."
   }
 }

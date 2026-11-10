@@ -1,5 +1,6 @@
 import { sql } from 'drizzle-orm';
 import {
+  type AnySQLiteColumn,
   check,
   index,
   integer,
@@ -247,6 +248,12 @@ export const processingJobs = sqliteTable(
     attempts: integer('attempts').notNull().default(0),
     nextAttemptAt: integer('next_attempt_at'),
     errorCode: text('error_code'),
+    // Fase 3: rascunho em revisão (texto/segmentos). Apagado ao concluir, cancelar ou falhar.
+    payloadJson: text('payload_json'),
+    origin: text('origin'),
+    transcriptId: text('transcript_id').references((): AnySQLiteColumn => transcripts.id, {
+      onDelete: 'set null',
+    }),
     ...ts(),
   },
   (t) => [
@@ -295,6 +302,7 @@ export const transcripts = sqliteTable(
   },
   (t) => [
     index('transcripts_project_idx').on(t.projectId),
+    index('transcripts_ws_idx').on(t.workspaceId),
     check('transcripts_origin_ck', sql`${t.origin} in ('pasted','srt','vtt','wasm')`),
   ],
 );

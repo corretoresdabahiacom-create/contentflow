@@ -35,6 +35,7 @@ export default defineConfig({
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api\//, /^\/billing/],
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        globIgnores: ['**/transformers-*.js'], // modo WASM é opcional e online (baixa o modelo); fora do cache de instalação
         runtimeCaching: [],
       },
     }),

@@ -23,5 +23,6 @@ export const ERROR_CODES = {
   ORIGIN_NOT_ALLOWED: 'origin_not_allowed',
   QUOTA_EXCEEDED: 'quota_exceeded',
   VERSION_CONFLICT: 'version_conflict',
+  INVALID_STATE: 'invalid_state',
 } as const;
 export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES];

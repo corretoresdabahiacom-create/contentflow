@@ -10,10 +10,10 @@ import {
   type ExportDoc,
 } from '@contentflow/shared';
 import type { AppEnv } from '../context';
-import type { Db } from '../db/client';
 import { clients, contentOutputs, projectSources, projects, usageRecords } from '../db/schema';
 import { audit } from '../lib/audit';
 import { HttpError } from '../lib/http';
+import { countOf, quota } from '../lib/quota';
 import { getIntSetting } from '../lib/settings';
 import { requireRole } from '../middleware';
 
@@ -57,15 +57,6 @@ async function body<T extends z.ZodType>(c: { req: { json(): Promise<unknown> } 
   return p.data;
 }
 
-async function quota(db: Db, key: string, fallback: number, current: number, what: string) {
-  const limit = await getIntSetting(db, key, fallback);
-  if (current >= limit) {
-    throw new HttpError(409, ERROR_CODES.QUOTA_EXCEEDED, `Quota reached: ${what} (limit ${limit}).`, 'quota');
-  }
-}
-
-const countOf = async (db: Db, q: Promise<{ n: number } | undefined>) => (await q)?.n ?? 0;
-
 export function registerContentRoutes(r: Hono<AppEnv>) {
   // ---------- clients ----------
   r.post('/:workspaceId/clients', requireRole('admin'), async (c) => {
@@ -76,7 +67,7 @@ export function registerContentRoutes(r: Hono<AppEnv>) {
       db,
       'quota.clients_per_workspace',
       10,
-      await countOf(db, db.select({ n: sql<number>`count(*)` }).from(clients).where(eq(clients.workspaceId, workspaceId)).get()),
+      await countOf(db.select({ n: sql<number>`count(*)` }).from(clients).where(eq(clients.workspaceId, workspaceId)).get()),
       'clients per workspace',
     );
     const id = crypto.randomUUID();
@@ -123,7 +114,7 @@ export function registerContentRoutes(r: Hono<AppEnv>) {
       db,
       'quota.projects_per_workspace',
       100,
-      await countOf(db, db.select({ n: sql<number>`count(*)` }).from(projects).where(eq(projects.workspaceId, workspaceId)).get()),
+      await countOf(db.select({ n: sql<number>`count(*)` }).from(projects).where(eq(projects.workspaceId, workspaceId)).get()),
       'projects per workspace',
     );
     const id = crypto.randomUUID();
@@ -206,7 +197,7 @@ export function registerContentRoutes(r: Hono<AppEnv>) {
     const { outputs } = await body(c, outputsBatch);
     const db = c.get('db');
     const { workspaceId } = c.get('membership');
-    const have = await countOf(db, db.select({ n: sql<number>`count(*)` }).from(contentOutputs).where(eq(contentOutputs.projectId, c.get('projectId'))).get());
+    const have = await countOf(db.select({ n: sql<number>`count(*)` }).from(contentOutputs).where(eq(contentOutputs.projectId, c.get('projectId'))).get());
     const limit = await getIntSetting(db, 'quota.outputs_per_project', 200);
     if (have + outputs.length > limit) {
       throw new HttpError(409, ERROR_CODES.QUOTA_EXCEEDED, `Quota reached: outputs per project (limit ${limit}).`, 'quota');
@@ -278,7 +269,6 @@ export function registerContentRoutes(r: Hono<AppEnv>) {
     const { workspaceId } = c.get('membership');
     const period = new Date().toISOString().slice(0, 7);
     const used = await countOf(
-      db,
       db
         .select({ n: sql<number>`coalesce(sum(${usageRecords.amount}), 0)` })
         .from(usageRecords)
