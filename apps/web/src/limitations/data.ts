@@ -56,13 +56,13 @@ export const limitations: readonly Limitation[] = [
     title: 'Renderização de vídeo',
     status: 'not_available',
     reason:
-      'Edição de vídeo exige ffmpeg e CPU/GPU além do que a infraestrutura gratuita permite no servidor.',
+      'Edição de vídeo exige ffmpeg e CPU/GPU além do que a infraestrutura gratuita permite no servidor. O corte experimental no navegador (ffmpeg.wasm) só seria oferecido se um teste empírico em máquina real provasse viabilidade; esse teste ainda não foi executado (status blocked), então o corte de vídeo não está habilitado e a flag video_render_enabled continua desligada. O produto entrega o plano de edição exportável.',
     alternatives: [
-      'Exportar um plano de edição com timestamps e roteiro.',
+      'Exportar o plano de edição (TXT, MD, CSV ou JSON) com timecodes IN/OUT, roteiro e notas, e cortar no CapCut, Premiere, DaVinci Resolve, Final Cut ou Descript.',
       'Exportar legendas em .srt/.vtt.',
-      'Se o teste de viabilidade passar: corte experimental no navegador (opt-in, até 3 min, apenas desktop).',
+      'Reabrir a decisão rodando o protocolo de docs/video-viability.md numa máquina real.',
     ],
-    inlineNotice: 'Vídeo final não é renderizado por padrão.',
+    inlineNotice: 'O ContentFlow não corta nem renderiza vídeo: exporte o plano de edição.',
     related: ['transcricao-de-audio-video-no-servidor'],
     sourceDoc: 'docs/video-viability.md',
   },
@@ -274,7 +274,7 @@ export const limitationsById: Record<string, Limitation> = Object.fromEntries(
   limitations.map((l) => [l.id, l]),
 );
 
-export const limitationsMeta = { version: '0.5.0', updatedAt: '2026-11-09' } as const;
+export const limitationsMeta = { version: '0.6.0', updatedAt: '2026-11-10' } as const;
 
 /** Id de âncora URL-safe. */
 export function anchorId(id: string): string {

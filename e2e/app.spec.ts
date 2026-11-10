@@ -502,3 +502,52 @@ test('isolamento: B não acessa clips de A (404)', async ({ browser }) => {
   const bOrigin = { Origin: new URL(b.url()).origin };
   expect((await b.request.post(`${base}/projects/${proj.id}/clips`, { data: { clips: [{ startMs: 0, endMs: 5000, title: 't', justification: 'j' }] }, headers: bOrigin })).status()).toBe(404);
 });
+
+test('plano de edição: exporta MD/CSV/TXT/JSON com IN/OUT, roteiro e notas; sem vídeo', async ({ page }) => {
+  await register(page, `plan-${uniq()}@example.com`);
+  await openNewProject(page, 'Plano');
+  const panel = page.getByLabel('Clip suggestions', { exact: true });
+  const plan = panel.getByLabel('Edit plan', { exact: true });
+  await expect(plan.getByText(/does not cut or render video/)).toBeVisible();
+  await expect(plan.getByRole('note')).toContainText('não corta nem renderiza vídeo');
+  await expect(plan.getByRole('button', { name: 'Edit plan as MD' })).toBeDisabled();
+
+  await importSrt(page, TOPIC_SRT);
+  const form = panel.getByRole('form', { name: 'Add clip manually' });
+  await form.getByLabel('Title').fill('=Abertura');
+  await form.getByLabel('Start (m:ss)').fill('0:00');
+  await form.getByLabel('End (m:ss)').fill('0:20');
+  await form.getByRole('button', { name: 'Add clip manually' }).click();
+  const card = panel.getByRole('article', { name: 'Clip: =Abertura' });
+  await card.getByLabel('Notes').fill('usar b-roll aqui');
+  await card.getByRole('button', { name: 'Save changes' }).click();
+  await expect(card).toContainText('v2');
+  await expect(plan.getByRole('button', { name: 'Edit plan as MD' })).toBeEnabled();
+
+  const fs = await import('node:fs/promises');
+  const grab = async (name: string) => {
+    const [dl] = await Promise.all([page.waitForEvent('download'), plan.getByRole('button', { name }).click()]);
+    return { file: dl.suggestedFilename(), body: await fs.readFile((await dl.path()) as string, 'utf8') };
+  };
+  const md = await grab('Edit plan as MD');
+  expect(md.file).toBe('Plano-edit-plan.md');
+  expect(md.body).toContain('# Plano de edição — Plano');
+  expect(md.body).toContain('`00:00:00.000`');
+  expect(md.body).toContain('`00:00:20.000`');
+  expect(md.body).toContain('A energia solar cresceu');
+  expect(md.body).toContain('usar b-roll aqui');
+  expect(md.body).toMatch(/não contém vídeo/);
+
+  const csv = await grab('Edit plan as CSV');
+  expect(csv.file).toBe('Plano-edit-plan.csv');
+  const lines = csv.body.trimEnd().split('\r\n');
+  expect(lines[0]).toBe('index,clip_id,title,in,out,duration_s,in_ms,out_ms,script,script_source,justification,notes,edited');
+  expect(lines[1]).toContain(",'=Abertura,");
+  expect(lines[1]).toContain('00:00:00.000,00:00:20.000,20.000,0,20000');
+  expect((await grab('Edit plan as TXT')).body).toMatch(/IN 00:00:00\.000\s+OUT 00:00:20\.000/);
+  const json = JSON.parse((await grab('Edit plan as JSON')).body);
+  expect(json).toMatchObject({ schema: 'contentflow.edit-plan', schemaVersion: 1 });
+  expect(json.items[0]).toMatchObject({ title: '=Abertura', inMs: 0, outMs: 20000, scriptSource: 'transcript', notes: 'usar b-roll aqui' });
+  // nada de vídeo: não há botão de cortar/renderizar
+  await expect(page.getByRole('button', { name: /cortar vídeo|cut video|render/i })).toHaveCount(0);
+});

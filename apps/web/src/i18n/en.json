@@ -234,7 +234,11 @@
     "why": "Why",
     "notes": "Notes",
     "addManual": "Add clip manually",
-    "manualWhy": "Added manually."
+    "manualWhy": "Added manually.",
+    "planHeading": "Edit plan",
+    "planHelp": "One entry per clip with IN/OUT timecodes, the script taken from your transcript, and your notes, to use in your own editor (CapCut, Premiere, DaVinci Resolve, Final Cut, Descript). ContentFlow does not cut or render video. Timecodes come from the transcript and may not match your media; check them in your editor.",
+    "planAs": "Edit plan as {{format}}",
+    "planEmpty": "Add or generate clips to export an edit plan."
   },
   "channels": {
     "generic": "Generic",

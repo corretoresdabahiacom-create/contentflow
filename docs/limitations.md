@@ -2,7 +2,7 @@
 
 > Documento público, gerado a partir de `apps/web/src/limitations/data.ts`. **Não edite este arquivo diretamente.** Rode `pnpm gen:limitations`.
 
-**Versão:** 0.5.0 · **Última atualização:** 2026-11-09
+**Versão:** 0.6.0 · **Última atualização:** 2026-11-10
 
 ## Sumário
 
@@ -71,13 +71,13 @@ _Referência interna:_ `docs/transcription.md`
 
 **Status:** Indisponível
 
-Edição de vídeo exige ffmpeg e CPU/GPU além do que a infraestrutura gratuita permite no servidor.
+Edição de vídeo exige ffmpeg e CPU/GPU além do que a infraestrutura gratuita permite no servidor. O corte experimental no navegador (ffmpeg.wasm) só seria oferecido se um teste empírico em máquina real provasse viabilidade; esse teste ainda não foi executado (status blocked), então o corte de vídeo não está habilitado e a flag video_render_enabled continua desligada. O produto entrega o plano de edição exportável.
 
 **O que você pode fazer:**
 
-- Exportar um plano de edição com timestamps e roteiro.
+- Exportar o plano de edição (TXT, MD, CSV ou JSON) com timecodes IN/OUT, roteiro e notas, e cortar no CapCut, Premiere, DaVinci Resolve, Final Cut ou Descript.
 - Exportar legendas em .srt/.vtt.
-- Se o teste de viabilidade passar: corte experimental no navegador (opt-in, até 3 min, apenas desktop).
+- Reabrir a decisão rodando o protocolo de docs/video-viability.md numa máquina real.
 
 **Ver também:** [Transcrição de áudio/vídeo no servidor](#limitacao-transcricao-de-audio-video-no-servidor)
 

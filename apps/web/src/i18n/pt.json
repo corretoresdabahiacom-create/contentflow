@@ -234,7 +234,11 @@
     "why": "Por quê",
     "notes": "Notas",
     "addManual": "Adicionar corte manualmente",
-    "manualWhy": "Adicionado manualmente."
+    "manualWhy": "Adicionado manualmente.",
+    "planHeading": "Plano de edição",
+    "planHelp": "Uma entrada por corte com os tempos IN/OUT, o roteiro tirado da sua transcrição e suas notas, para usar no seu editor (CapCut, Premiere, DaVinci Resolve, Final Cut, Descript). O ContentFlow não corta nem renderiza vídeo. Os tempos vêm da transcrição e podem não coincidir com a sua mídia; confira no editor.",
+    "planAs": "Plano de edição em {{format}}",
+    "planEmpty": "Adicione ou gere cortes para exportar um plano de edição."
   },
   "channels": {
     "generic": "Genérico",

@@ -127,3 +127,11 @@ describe('canais e export (Fase 4)', () => {
     expect(doc.transcript.segments).toHaveLength(2);
   });
 });
+
+describe('flag de renderização de vídeo (Fase 5)', () => {
+  it('video_render_enabled nasce desligada (teste de viabilidade não executado)', () => {
+    const h = setup();
+    const r = rows<{ enabled: number }>(h.raw, "select enabled from feature_flags where key = 'video_render_enabled'");
+    expect(r).toEqual([{ enabled: 0 }]);
+  });
+});

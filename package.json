@@ -12,7 +12,8 @@
     "format": "prettier --write .",
     "db:generate": "pnpm --filter @contentflow/api db:generate",
     "gen:limitations": "tsx scripts/gen-limitations-doc.ts",
-    "check:limitations": "tsx scripts/gen-limitations-doc.ts --check"
+    "check:limitations": "tsx scripts/gen-limitations-doc.ts --check",
+    "report:video": "tsx scripts/video-viability-report.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

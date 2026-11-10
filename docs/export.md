@@ -38,3 +38,7 @@ Exportam a transcrição com timestamps do projeto (campo `transcript`). O botã
 
 ## Canais
 Cada saída guarda o `channel`. Os templates por canal (YouTube, Instagram, TikTok, LinkedIn, Facebook, Blog, E-mail) são fixos e rotulados `template`; os limites de caracteres exibidos são aproximados, o texto que passa do limite é sinalizado (nunca cortado em silêncio depois de editado).
+
+## Plano de edição (Fase 5)
+
+O plano de edição por corte é exportado em TXT, MD, CSV e JSON a partir do painel de cortes, com formato próprio (`contentflow.edit-plan`, `schemaVersion` 1). Ver `docs/edit-plan.md`.

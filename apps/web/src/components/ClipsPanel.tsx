@@ -1,9 +1,21 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { CLIP_HEURISTIC_VERSION, suggestClips, type Segment } from '@contentflow/shared';
+import {
+  CLIP_HEURISTIC_VERSION,
+  EDIT_PLAN_FORMATS,
+  EDIT_PLAN_MIME,
+  buildEditPlan,
+  planFilename,
+  serializePlan,
+  suggestClips,
+  type EditPlanFormat,
+  type ExportDoc,
+  type Segment,
+} from '@contentflow/shared';
 import { api } from '../lib/api';
 import { formatClock, formatDuration, parseClock } from '../lib/clock';
+import { Limitation } from '../limitations/Limitation';
 import { ErrorNote } from './ErrorNote';
 
 type Clip = {
@@ -98,6 +110,19 @@ export function ClipsPanel({ url }: { url: string }) {
     onSuccess: () => { setMTitle(''); refresh(); },
   });
 
+  const plan = useMutation({
+    mutationFn: async (f: EditPlanFormat) => {
+      const doc = await api<ExportDoc>(`${url}/export-data`);
+      const blob = new Blob([serializePlan(buildEditPlan(doc), f)], { type: EDIT_PLAN_MIME[f] });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = planFilename(doc.project.name, f);
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    },
+  });
+  const hasClips = (clips.data?.clips.length ?? 0) > 0;
+
   return (
     <div className="space-y-3" aria-label={t('clips.heading')}>
       <h2 className="text-lg font-medium">{t('clips.heading')}</h2>
@@ -125,6 +150,21 @@ export function ClipsPanel({ url }: { url: string }) {
       <div className="grid gap-4">
         {clips.data?.clips.map((k) => <ClipCard key={`${k.id}-${k.version}`} k={k} url={url} onChanged={refresh} />)}
       </div>
+
+      <section className="card space-y-2" aria-label={t('clips.planHeading')}>
+        <h3 className="font-medium">{t('clips.planHeading')}</h3>
+        <p className="text-sm text-neutral-600 dark:text-neutral-400">{t('clips.planHelp')}</p>
+        <Limitation id="renderizacao-de-video" variant="inline" />
+        {!hasClips && <p className="text-sm">{t('clips.planEmpty')}</p>}
+        <div className="flex flex-wrap gap-2">
+          {EDIT_PLAN_FORMATS.map((f) => (
+            <button key={f} className="btn btn-secondary" disabled={!hasClips || plan.isPending} onClick={() => plan.mutate(f)}>
+              {t('clips.planAs', { format: f.toUpperCase() })}
+            </button>
+          ))}
+        </div>
+        <ErrorNote error={plan.error} />
+      </section>
 
       <form className="card flex flex-wrap items-end gap-2" onSubmit={(ev) => { ev.preventDefault(); if (s !== null && e !== null && e > s && mTitle.trim()) add.mutate(); }} aria-label={t('clips.addManual')}>
         <div><label className="block text-sm" htmlFor="m-title">{t('clips.title')}</label><input id="m-title" className="input" value={mTitle} maxLength={120} onChange={(ev) => setMTitle(ev.target.value)} /></div>
