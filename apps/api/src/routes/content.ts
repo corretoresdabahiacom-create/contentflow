@@ -33,7 +33,8 @@ const analysisSchema = z.object({
 const sourceSchema = z.object({
   kind: z.enum(SOURCE_KINDS),
   filename: z.string().trim().max(200).nullish(),
-  text: z.string().min(1).max(TEXT_MAX_CHARS),
+  // NUL indica binário disfarçado de texto (ex.: .exe renomeado): nunca guardamos.
+  text: z.string().min(1).max(TEXT_MAX_CHARS).refine((v) => !v.includes('\u0000')),
   analysis: analysisSchema.nullish(),
 });
 
@@ -41,7 +42,7 @@ const outputInput = z.object({
   channel: z.enum(ALL_CHANNELS).default('generic'),
   kind: z.enum(OUTPUT_KINDS),
   title: z.string().trim().max(200).nullish(),
-  body: z.string().min(1).max(50_000),
+  body: z.string().min(1).max(50_000).refine((v) => !v.includes('\u0000')),
 });
 const outputsBatch = z.object({ outputs: z.array(outputInput).min(1).max(20) });
 const outputPatch = z

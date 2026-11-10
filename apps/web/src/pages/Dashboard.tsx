@@ -4,6 +4,7 @@ import { Link, Navigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ApprovalsInbox } from '../components/Approvals';
 import { ErrorNote } from '../components/ErrorNote';
+import { Notifications } from '../components/Notifications';
 import { api } from '../lib/api';
 import { Workspace } from './Workspace';
 import { Limitation } from '../limitations/Limitation';
@@ -38,6 +39,7 @@ export function Dashboard() {
           {t('dashboard.welcome', { email: me.data.user.email })}
         </p>
       </header>
+      <Notifications />
       <div>
         <h2 className="mb-2 text-lg font-medium">{t('dashboard.workspaces')}</h2>
         <ul className="space-y-2">

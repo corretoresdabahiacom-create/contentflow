@@ -13,11 +13,15 @@
     "db:generate": "pnpm --filter @contentflow/api db:generate",
     "gen:limitations": "tsx scripts/gen-limitations-doc.ts",
     "check:limitations": "tsx scripts/gen-limitations-doc.ts --check",
-    "report:video": "tsx scripts/video-viability-report.ts"
+    "report:video": "tsx scripts/video-viability-report.ts",
+    "loadtest": "node scripts/loadtest.mjs",
+    "lighthouse": "lhci autorun"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@lhci/cli": "^0.16.0",
     "@playwright/test": "^1.65.0",
+    "autocannon": "^9.0.0",
     "eslint": "^10.14.0",
     "prettier": "^3.9.10",
     "tsx": "^4.23.15",
@@ -25,5 +29,12 @@
     "typescript-eslint": "^8.72.1",
     "vitest": "^5.1.0"
   },
-  "type": "module"
+  "type": "module",
+  "pnpm": {
+    "overrides": {
+      "protobufjs": ">=7.6.1",
+      "sharp": ">=0.35.5",
+      "basic-ftp": ">=6.2.1"
+    }
+  }
 }

@@ -1,6 +1,8 @@
 import { Route, Routes } from 'react-router';
 import { Layout } from './components/Layout';
 import { LimitationsList } from './limitations/LimitationsList';
+import { Admin } from './pages/Admin';
+import { Report } from './pages/Report';
 import { AuthForm } from './pages/AuthForm';
 import { ClientPage } from './pages/ClientPage';
 import { Dashboard } from './pages/Dashboard';
@@ -20,6 +22,8 @@ export function App() {
         <Route path="login" element={<AuthForm mode="login" />} />
         <Route path="register" element={<AuthForm mode="register" />} />
         <Route path="app" element={<Dashboard />} />
+        <Route path="app/admin" element={<Admin />} />
+        <Route path="report" element={<Report />} />
         <Route path="app/clients/:clientId/projects/:projectId" element={<ProjectPage />} />
         <Route path="app/w/:ws/clients/:clientId/projects/:projectId" element={<ProjectPage />} />
         <Route path="app/w/:ws/clients/:clientId" element={<ClientPage />} />

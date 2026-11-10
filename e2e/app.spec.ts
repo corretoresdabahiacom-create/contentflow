@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import { expect, test, type Page } from '@playwright/test';
 
 const uniq = () => `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
@@ -660,6 +661,7 @@ test('calendário editorial: arrastar entre dias, semana/mês, edição e persis
   await form.getByLabel('Title').fill('Post A');
   await form.getByLabel('Date').fill(ymd(15));
   await form.getByRole('button', { name: 'Add to calendar' }).click();
+  await expect(cell(15).getByRole('button', { name: /Post A/ })).toBeVisible(); // o formulário só zera depois que o item entra
   await form.getByLabel('Title').fill('Ideia solta');
   await form.getByLabel('Date').fill('');
   await form.getByRole('button', { name: 'Add to calendar' }).click();
@@ -780,4 +782,79 @@ test('isolamento Fase 6: B não acessa membros, convites, calendário, brand kit
   // o link público de A continua funcionando para quem tem o token (é o propósito), mas só mostra o escolhido
   const pub = await (await b.request.get(`/api/shared/${link.path.split('/s/')[1]}`)).json();
   expect(pub.outputs).toHaveLength(1);
+});
+
+/** Promove um usuário a admin global como um operador faria: direto no D1 local (não existe rota para isso). */
+const makeGlobalAdmin = (email: string) =>
+  execFileSync('npx', ['wrangler', 'd1', 'execute', 'contentflow', '--local', '--persist-to', '.e2e-state', '--command', `update users set is_global_admin = 1 where email = '${email}'`], { cwd: 'apps/api', stdio: 'ignore' });
+
+test('Fase 7: denúncia pública, moderação (avisar dono antes de remover) e aviso ao dono', async ({ browser }) => {
+  const owner = await (await browser.newContext()).newPage();
+  const anon = await (await browser.newContext()).newPage();
+  const admin = await (await browser.newContext()).newPage();
+  const adminEmail = `adm-${uniq()}@example.com`;
+  await register(owner, `own-${uniq()}@example.com`);
+  await register(admin, adminEmail);
+  const ws = await wsOf(owner, 'personal');
+  const s = await seedContent(owner, ws);
+  const link = await (await apiOf(owner).send('post', `${s.base}/shared-links`, { outputIds: [s.outs[0]!.id] })).json();
+
+  // denúncia pública, sem login
+  await anon.goto('/report');
+  await anon.getByLabel(/Content address/).fill(`http://localhost:8787/s/${link.token}`);
+  await anon.getByLabel('Reason').selectOption('abuse');
+  await anon.getByLabel('Details (optional)').fill('Conteúdo ofensivo');
+  await anon.getByRole('button', { name: 'Send report' }).click();
+  await expect(anon.getByText(/Report received/)).toBeVisible();
+
+  // quem não é admin não vê o painel (API 404; página redireciona)
+  expect((await owner.request.get('/api/admin/overview')).status()).toBe(404);
+  await owner.goto('/app/admin');
+  await expect(owner).toHaveURL(/\/app$/);
+  await expect(owner.getByRole('link', { name: 'Administration' })).toHaveCount(0);
+
+  // admin global
+  makeGlobalAdmin(adminEmail);
+  await admin.goto('/app');
+  await admin.getByRole('link', { name: 'Administration' }).click();
+  await expect(admin.getByRole('heading', { name: 'Global administration' })).toBeVisible();
+  await expect(admin.getByText(/never shows texts, transcripts/)).toBeVisible();
+  await expect(admin.getByText('unavailable: we keep no API token').first()).toBeVisible();
+  await expect(admin.getByText('TEXTO-FONTE-PRIVADO')).toHaveCount(0);
+
+  await admin.getByRole('tab', { name: 'Reports' }).click();
+  await admin.getByRole('button', { name: 'Open' }).first().click();
+  await expect(admin.getByText('Corpo escolhido para o cliente.')).toBeVisible(); // amostra de conteúdo já compartilhado
+  await expect(admin.getByText('Rascunho que não será compartilhado.')).toHaveCount(0);
+  await expect(admin.getByText('TEXTO-FONTE-PRIVADO')).toHaveCount(0);
+  await expect(admin.getByText(/Notify the owner before removing/)).toBeVisible();
+  await expect(admin.getByRole('button', { name: 'Remove (revoke link)' })).toBeDisabled();
+
+  await admin.getByRole('button', { name: 'Notify owner' }).click();
+  await expect(admin.getByRole('checkbox', { name: /I confirm I want to revoke/ })).toBeEnabled();
+  await admin.getByRole('checkbox', { name: /I confirm I want to revoke/ }).check();
+  await admin.getByRole('button', { name: 'Remove (revoke link)' }).click();
+  await expect(admin.getByText('Nothing to show.').or(admin.getByText('resolved'))).toBeVisible();
+
+  // dono recebe os dois avisos e o link público deixa de abrir
+  await owner.goto('/app');
+  await expect(owner.getByText(/was reported \(reason: Abuse or harassment\)/)).toBeVisible();
+  await expect(owner.getByText(/was removed after a report/)).toBeVisible();
+  expect((await anon.request.get(`/api/shared/${link.token}`)).status()).toBe(404);
+});
+
+test('Fase 7: admin altera flag e cota; monetização e IA externa ficam travadas', async ({ page }) => {
+  const email = `flg-${uniq()}@example.com`;
+  await register(page, email);
+  makeGlobalAdmin(email);
+  await page.goto('/app/admin');
+  await page.getByRole('tab', { name: 'Flags' }).click();
+  await expect(page.getByText(/R7: pagamentos não existem/)).toBeVisible();
+  await expect(page.getByRole('checkbox', { name: 'On' }).first()).toBeDisabled();
+  await page.getByRole('tab', { name: 'Quotas' }).click();
+  const novo = 20 + Math.floor(Math.random() * 70); // o D1 do E2E é compartilhado entre os projetos: o valor precisa mudar
+  await page.getByLabel('quota.clients_per_workspace', { exact: true }).fill(String(novo));
+  await page.getByRole('row', { name: /quota.clients_per_workspace/ }).getByRole('button', { name: 'Save' }).click();
+  await expect(page.getByText('Saved.')).toBeVisible();
+  expect((await (await page.request.get('/api/admin/settings')).json()).settings.find((x: { key: string }) => x.key === 'quota.clients_per_workspace').value).toBe(novo);
 });

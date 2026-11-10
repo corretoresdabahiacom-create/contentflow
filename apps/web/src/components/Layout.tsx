@@ -32,6 +32,7 @@ export function Layout() {
             ContentFlow AI
           </Link>
           <Link to="/docs/limitations">{t('nav.limitations')}</Link>
+          <Link to="/report">{t('nav.report')}</Link>
           <span className="flex-1" />
           <label className="sr-only" htmlFor="lang">
             {t('nav.language')}
@@ -66,6 +67,7 @@ export function Layout() {
           {me.data ? (
             <>
               <Link to="/app">{t('nav.app')}</Link>
+              {me.data.user.isGlobalAdmin && <Link to="/app/admin">{t('nav.admin')}</Link>}
               <button className="btn btn-secondary" onClick={logout}>
                 {t('nav.logout')}
               </button>

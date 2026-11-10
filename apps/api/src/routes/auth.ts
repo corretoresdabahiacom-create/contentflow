@@ -205,6 +205,7 @@ export function authRoutes(deps: Deps) {
         email: u.email,
         displayName: profile?.displayName ?? null,
         locale: profile?.locale ?? 'en',
+        isGlobalAdmin: u.isGlobalAdmin,
       },
       workspaces: rows.map((w) => ({ ...w, kind: w.kind as 'personal' | 'agency' })),
     };

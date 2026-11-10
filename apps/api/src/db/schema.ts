@@ -558,10 +558,18 @@ export const reports = sqliteTable(
     reporterContact: text('reporter_contact'),
     status: text('status').notNull().default('open'),
     resolvedAt: integer('resolved_at'),
+    urgent: bool('urgent'),
+    targetWorkspaceId: text('target_workspace_id'),
+    ownerNotifiedAt: integer('owner_notified_at'),
+    resolution: text('resolution'),
+    resolutionNote: text('resolution_note'),
+    reviewerId: text('reviewer_id'),
+    reporterIpHash: text('reporter_ip_hash'),
     ...ts(),
   },
   (t) => [
     index('reports_status_idx').on(t.status, t.createdAt),
+    index('reports_ws_idx').on(t.targetWorkspaceId),
     check('reports_status_ck', sql`${t.status} in ('open','reviewing','resolved','dismissed')`),
   ],
 );

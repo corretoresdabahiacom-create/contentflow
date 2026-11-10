@@ -163,3 +163,9 @@ export const requireRole =
     }
     await next();
   };
+
+/** Admin global: quem não é recebe 404 (o painel não revela que existe). */
+export const requireGlobalAdmin: MiddlewareHandler<AppEnv> = async (c, next) => {
+  if (!c.get('user').isGlobalAdmin) throw new HttpError(404, ERROR_CODES.NOT_FOUND, 'Not found.');
+  await next();
+};

@@ -33,3 +33,7 @@ packages/shared  (zod, constantes, derivação da chave de autenticação)
 - Novas rotas em `apps/api/src/routes/{team,editorial,sharing}.ts`, registradas por `workspaces.ts`; `/api/invites` e `/api/shared` ficam fora do escopo de workspace (a segunda é pública, sem sessão, com rate limit e cabeçalhos `noindex`/`no-referrer`).
 - Tokens (convite e link) são aleatórios, mostrados uma vez e guardados só como SHA-256. Aprovações guardam a versão do output; calendário usa datas sem horário. Detalhes em `docs/team-calendar.md`.
 - Front: `@dnd-kit/core` apenas no calendário; página pública `/s/:token` renderizada fora do Layout.
+
+## Fase 7: administração e validação
+- `routes/admin.ts` (global, 404 para não-admin), `routes/reports.ts` (denúncia pública + notificações do usuário). O Cron também envia alertas de cota aos admins.
+- O front ganhou `/report` (público) e `/app/admin`. Lighthouse CI (`lighthouserc.json`) e carga local (`scripts/loadtest.mjs`) fazem parte da validação; detalhes em `docs/validation.md` e `docs/security-review.md`.

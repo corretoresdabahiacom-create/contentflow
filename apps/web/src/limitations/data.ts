@@ -312,8 +312,30 @@ export const limitations: readonly Limitation[] = [
     id: 'denuncias-e-moderacao',
     title: 'Denúncias e moderação',
     status: 'limited',
-    reason: 'Denúncias são tratadas manualmente pela administração.',
+    reason:
+      'Denúncias de conteúdo compartilhado por link são tratadas manualmente pela administração. Só links compartilhados podem ser denunciados: o resto do conteúdo é privado e não é visível a terceiros. O dono é avisado dentro do produto (não por e-mail) antes de qualquer remoção, exceto em denúncias de conteúdo ilegal, que são urgentes. Remover significa revogar o link; o produto não apaga contas nem conteúdo do dono por esse caminho. Se você informar um contato, não há garantia de resposta individual.',
     alternatives: ['Enviar denúncia em /report.', 'Prazo de resposta: até 5 dias úteis.'],
+    inlineNotice: 'Denúncias são analisadas manualmente.',
+    sourceDoc: 'docs/moderation.md',
+  },
+  {
+    id: 'painel-admin-sem-metricas-da-cloudflare',
+    title: 'Painel de administração: consumo da Cloudflare indisponível',
+    status: 'not_available',
+    reason:
+      'O painel global mostra contagens reais do banco (linhas por tabela, jobs, cotas por workspace), mas não mostra requisições do Worker nem leituras e escritas do D1: isso exigiria guardar um token de API da Cloudflare no servidor, que não existe. Também não há bloqueio automático em 90% do consumo global, porque esse consumo não é medido aqui; os avisos de 70% e 90% valem para as cotas internas (por workspace e por projeto).',
+    alternatives: ['Consultar Workers & D1 > Metrics no painel da Cloudflare.', 'Conferir docs/free-tier-limits.md.'],
+    inlineNotice: 'Consumo da Cloudflare: veja o painel dela.',
+    sourceDoc: 'docs/admin.md',
+  },
+  {
+    id: 'admin-global-por-operador',
+    title: 'Admin global só é concedido por um operador',
+    status: 'limited',
+    reason:
+      'Não existe tela nem rota para tornar alguém admin global: isso é feito por quem opera o banco (um comando D1 documentado em docs/admin.md). É proposital: nenhuma falha de aplicação pode promover um usuário.',
+    alternatives: ['Seguir o passo a passo de docs/admin.md.'],
+    sourceDoc: 'docs/admin.md',
   },
 ] as const;
 
@@ -321,7 +343,7 @@ export const limitationsById: Record<string, Limitation> = Object.fromEntries(
   limitations.map((l) => [l.id, l]),
 );
 
-export const limitationsMeta = { version: '0.7.0', updatedAt: '2026-11-10' } as const;
+export const limitationsMeta = { version: '0.8.0', updatedAt: '2026-11-10' } as const;
 
 /** Id de âncora URL-safe. */
 export function anchorId(id: string): string {

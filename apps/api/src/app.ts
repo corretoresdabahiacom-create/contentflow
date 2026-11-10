@@ -7,7 +7,9 @@ import { featureFlags } from './db/schema';
 import { HttpError } from './lib/http';
 import { turnstileMode } from './lib/turnstile';
 import { originGuard, securityHeaders } from './middleware';
+import { adminRoutes } from './routes/admin';
 import { authRoutes } from './routes/auth';
+import { notificationRoutes, reportPublicRoutes } from './routes/reports';
 import { sharedPublicRoutes } from './routes/sharing';
 import { inviteRoutes } from './routes/team';
 import { workspaceRoutes } from './routes/workspaces';
@@ -46,6 +48,9 @@ export function createApp(deps: Deps = { fetch: (...a) => fetch(...a) }) {
   app.route('/api/workspaces', workspaceRoutes);
   app.route('/api/invites', inviteRoutes());
   app.route('/api/shared', sharedPublicRoutes());
+  app.route('/api/reports', reportPublicRoutes(deps));
+  app.route('/api/notifications', notificationRoutes());
+  app.route('/api/admin', adminRoutes());
 
   // R7: nenhuma rota de cobrança existe.
   for (const p of ['/billing', '/billing/*', '/api/billing', '/api/billing/*']) {

@@ -2,7 +2,7 @@
 
 > Documento público, gerado a partir de `apps/web/src/limitations/data.ts`. **Não edite este arquivo diretamente.** Rode `pnpm gen:limitations`.
 
-**Versão:** 0.7.0 · **Última atualização:** 2026-11-10
+**Versão:** 0.8.0 · **Última atualização:** 2026-11-10
 
 ## Sumário
 
@@ -31,6 +31,8 @@
 - [Permissões por cliente](#limitacao-permissoes-por-cliente) — _Indisponível_
 - [Calendário editorial: só planejamento](#limitacao-calendario-sem-publicacao-e-sem-offline) — _Limitado_
 - [Denúncias e moderação](#limitacao-denuncias-e-moderacao) — _Limitado_
+- [Painel de administração: consumo da Cloudflare indisponível](#limitacao-painel-admin-sem-metricas-da-cloudflare) — _Indisponível_
+- [Admin global só é concedido por um operador](#limitacao-admin-global-por-operador) — _Limitado_
 
 <a id="limitacao-transcricao-de-audio-video-no-servidor"></a>
 
@@ -405,9 +407,40 @@ _Referência interna:_ `docs/team-calendar.md#calendario`
 
 **Status:** Limitado
 
-Denúncias são tratadas manualmente pela administração.
+Denúncias de conteúdo compartilhado por link são tratadas manualmente pela administração. Só links compartilhados podem ser denunciados: o resto do conteúdo é privado e não é visível a terceiros. O dono é avisado dentro do produto (não por e-mail) antes de qualquer remoção, exceto em denúncias de conteúdo ilegal, que são urgentes. Remover significa revogar o link; o produto não apaga contas nem conteúdo do dono por esse caminho. Se você informar um contato, não há garantia de resposta individual.
 
 **O que você pode fazer:**
 
 - Enviar denúncia em /report.
 - Prazo de resposta: até 5 dias úteis.
+
+_Referência interna:_ `docs/moderation.md`
+
+<a id="limitacao-painel-admin-sem-metricas-da-cloudflare"></a>
+
+## Painel de administração: consumo da Cloudflare indisponível
+
+**Status:** Indisponível
+
+O painel global mostra contagens reais do banco (linhas por tabela, jobs, cotas por workspace), mas não mostra requisições do Worker nem leituras e escritas do D1: isso exigiria guardar um token de API da Cloudflare no servidor, que não existe. Também não há bloqueio automático em 90% do consumo global, porque esse consumo não é medido aqui; os avisos de 70% e 90% valem para as cotas internas (por workspace e por projeto).
+
+**O que você pode fazer:**
+
+- Consultar Workers & D1 > Metrics no painel da Cloudflare.
+- Conferir docs/free-tier-limits.md.
+
+_Referência interna:_ `docs/admin.md`
+
+<a id="limitacao-admin-global-por-operador"></a>
+
+## Admin global só é concedido por um operador
+
+**Status:** Limitado
+
+Não existe tela nem rota para tornar alguém admin global: isso é feito por quem opera o banco (um comando D1 documentado em docs/admin.md). É proposital: nenhuma falha de aplicação pode promover um usuário.
+
+**O que você pode fazer:**
+
+- Seguir o passo a passo de docs/admin.md.
+
+_Referência interna:_ `docs/admin.md`

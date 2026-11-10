@@ -51,3 +51,9 @@ Identidade: `users`, `user_profiles`, `sessions`. Workspaces: `workspaces`, `wor
 - `editorial_calendar.scheduled_for`: data sem horário (meia-noite UTC), ver `docs/team-calendar.md`.
 - Configurações novas em `system_settings`: `quota.workspaces_per_user`, `quota.calendar_per_workspace`, `quota.shared_links_per_workspace`, `shared_link.log_retention_days`.
 - Tabelas já existentes e agora usadas: `workspace_invites`, `brand_kits`, `editorial_calendar`, `approvals`, `shared_links`, `shared_link_outputs`, `shared_link_access_logs`.
+
+## Fase 7 (migração 0006)
+- `reports` ganhou `urgent`, `target_workspace_id`, `owner_notified_at`, `resolution`, `resolution_note`, `reviewer_id`, `reporter_ip_hash` e índice por workspace. `target_kind` é `shared_link` (com `target_id` = id interno do link) ou `unknown`.
+- Índice `processing_jobs(status, updated_at)` para achar jobs travados.
+- Configurações novas: `rate_limit.report.max/window_s` (5/3600), `report.retention_days` (180), `job.stuck_after_s` (3600).
+- `notifications.kind`: `moderation.notice`, `moderation.removed`, `quota.alert`.

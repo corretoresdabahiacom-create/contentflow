@@ -6,3 +6,4 @@ export * from './transcript';
 export * from './video';
 export * from './calendar';
 export * from './team';
+export * from './moderation/reports';

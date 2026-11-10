@@ -10,9 +10,15 @@ export default tseslint.config(
       '**/migrations/**',
       '**/coverage/**',
       '**/playwright-report/**',
+      '**/.lighthouseci/**',
+      '**/.e2e-state/**',
     ],
   },
   js.configs.recommended,
+  {
+    files: ['scripts/**/*.mjs'],
+    languageOptions: { globals: { process: 'readonly', fetch: 'readonly', setTimeout: 'readonly', console: 'readonly' } },
+  },
   ...tseslint.configs.recommended,
   {
     rules: {

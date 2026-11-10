@@ -23,7 +23,7 @@ export const loginSchema = z.object({
 });
 export type LoginInput = z.infer<typeof loginSchema>;
 
-export type PublicUser = { id: string; email: string; displayName: string | null; locale: string };
+export type PublicUser = { id: string; email: string; displayName: string | null; locale: string; isGlobalAdmin?: boolean };
 export type WorkspaceSummary = {
   id: string;
   name: string;

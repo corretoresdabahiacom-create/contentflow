@@ -50,6 +50,12 @@ Não-membro de workspace recebe 404 (não revela existência); papel insuficient
 - Separação de papéis nas aprovações e proteção de versão (decisão só vale para a versão pedida).
 - Risco aceito: sem permissões por client (todo membro vê todos os clients do workspace).
 
+## Administração e denúncias (Fase 7)
+- Admin global: só por operador no banco; rotas `/api/admin/*` dão 404 a quem não é admin; painel só com metadados (docs/admin.md). Revisão completa em `docs/security-review.md`.
+- `/report` é público: Turnstile com falha fechada, rate limit por IP (hash com pepper), resposta idêntica para link existente e inexistente, token do link nunca guardado, denunciante não é identificado além do contato opcional que ele mesmo digita.
+- Remoção exige aviso prévio ao dono (salvo urgência) e confirmação explícita; é auditada.
+- Texto com byte NUL é recusado na fonte e nos outputs.
+
 ## Headers e dados
 API: `X-Content-Type-Options`, `X-Frame-Options: DENY`, `Referrer-Policy`, `Cache-Control: no-store`. Frontend (`apps/web/public/_headers`): CSP restritiva (só `self` e `challenges.cloudflare.com`). O service worker **não** faz cache de `/api` nem de dados privados; só do shell e assets. Logs de auditoria guardam IP com hash, nunca o IP, a senha ou a chave. Lint (`no-restricted-syntax`) proíbe gravar credenciais em storage.
 
