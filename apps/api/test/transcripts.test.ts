@@ -77,6 +77,8 @@ describe('SRT/VTT com segmentos', () => {
     const ok = (await (await post(h, t, `/transcript-jobs/${id}/approve`)).json()) as { transcriptId: string };
     const tr = (await (await get(h, t, `/transcripts/${ok.transcriptId}`)).json()) as { text: string; segments: { idx: number; startMs: number; endMs: number; text: string }[] };
     expect(tr.text).toBe('Primeira fala.\nSegunda fala.');
+    const listed = (await (await get(h, t, '/transcripts')).json()) as { transcripts: { segments: number }[] };
+    expect(listed.transcripts[0]?.segments).toBe(2); // a UI usa isso para habilitar cortes e SRT/VTT
     expect(tr.segments).toEqual([
       { idx: 0, startMs: 0, endMs: 1500, text: 'Primeira fala.' },
       { idx: 1, startMs: 1500, endMs: 4000, text: 'Segunda fala.' },

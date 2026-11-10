@@ -35,6 +35,11 @@ Identidade: `users`, `user_profiles`, `sessions`. Workspaces: `workspaces`, `wor
 - `transcripts.body_text` guarda o texto; `transcript_segments` guarda `idx`, `start_ms`, `end_ms`, `text` (única por `(transcript_id, idx)`). Excluir a transcrição apaga os segmentos (cascade). Índice novo `transcripts(workspace_id)`.
 - Novas chaves em `system_settings`: `quota.transcripts_per_month` (200), `quota.active_jobs_per_project` (5), `job.stale_after_s` (604800).
 
+## Fase 4 (migração 0004)
+- `clip_suggestions` ganhou `notes`, `version` (bloqueio otimista), `origin` (`heuristic`|`manual`) e `signals_json` (sinais e `heuristicVersion` usados). A tabela não tem `workspace_id`: o isolamento vem de `project_id`, que sempre passa por `projectContext` (e `transcript_id` só pode apontar para transcrição do mesmo projeto e workspace).
+- `content_outputs.channel` agora aceita só `generic|youtube|instagram|tiktok|linkedin|facebook|blog|email` (validado na API).
+- `GET /transcripts` devolve `segments` (contagem) para a UI saber se há timestamps. Nova chave: `quota.clips_per_project` (100).
+
 ## Índices quentes
 
 `workspace_members(workspace_id, user_id)` único; `projects(workspace_id, client_id, created_at)`; `processing_jobs(status, created_at)` e `(status, next_attempt_at)`; `content_outputs(project_id, version)`; `audit_logs(workspace_id, created_at)`; `sessions(token_hash)` único e `(prev_token_hash)`.

@@ -102,6 +102,7 @@ export const limitations: readonly Limitation[] = [
     alternatives: [
       'Para PDFs escaneados, rodar OCR fora do produto e colar o texto.',
       'Revisar e editar cada saída: elas são rascunhos rotulados como template.',
+      'Por canal (YouTube, Instagram, TikTok, LinkedIn, Facebook, Blog, E-mail) os limites de caracteres são aproximados: confira cada plataforma antes de publicar.',
       'Outros formatos (.pptx, .xlsx, .odt, .rtf) não são prometidos; converta para .docx, .txt ou .csv.',
     ],
     inlineNotice: 'Saídas são geradas por template, sem IA, e PDFs escaneados não são lidos.',
@@ -131,6 +132,20 @@ export const limitations: readonly Limitation[] = [
     ],
     inlineNotice: 'Saídas por template não são IA.',
     related: ['transcricao-de-audio-video-no-servidor'],
+  },
+  {
+    id: 'cortes-por-heuristica-textual',
+    title: 'Sugestões de corte por heurística textual',
+    status: 'limited',
+    reason:
+      'Os cortes são sugeridos só a partir do texto e dos timestamps da transcrição (mudança de assunto, pausas, perguntas, imperativos, números, citações e palavras-chave). Exigem uma transcrição com timestamps (.srt/.vtt ou modo no navegador); texto colado sem tempos não gera cortes. A heurística erra: o motivo de cada sugestão é sempre exibido para você julgar e editar. O produto não corta nem renderiza o vídeo.',
+    alternatives: [
+      'Editar início, fim, título e notas de qualquer sugestão, ou criar cortes à mão.',
+      'Exportar os cortes (JSON/MD/TXT) como roteiro para editar em outro programa.',
+    ],
+    inlineNotice: 'Sugestões vêm de uma heurística de texto; confira cada uma.',
+    related: ['analise-de-emocao-e-viralidade', 'renderizacao-de-video'],
+    sourceDoc: 'docs/clips.md',
   },
   {
     id: 'analise-de-emocao-e-viralidade',
@@ -259,7 +274,7 @@ export const limitationsById: Record<string, Limitation> = Object.fromEntries(
   limitations.map((l) => [l.id, l]),
 );
 
-export const limitationsMeta = { version: '0.4.0', updatedAt: '2026-11-09' } as const;
+export const limitationsMeta = { version: '0.5.0', updatedAt: '2026-11-09' } as const;
 
 /** Id de âncora URL-safe. */
 export function anchorId(id: string): string {

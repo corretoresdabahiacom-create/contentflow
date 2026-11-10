@@ -4,7 +4,7 @@ import { splitSentences } from './tokenize';
 export const OUTPUT_KINDS = ['title', 'description', 'caption', 'script', 'article', 'newsletter', 'post'] as const;
 export type OutputKind = (typeof OUTPUT_KINDS)[number];
 
-export const PLACEHOLDERS = ['titulo', 'trecho', 'keywords', 'cta', 'resumo'] as const;
+export const PLACEHOLDERS = ['titulo', 'trecho', 'keywords', 'cta', 'resumo', 'hashtags'] as const;
 export type Placeholder = (typeof PLACEHOLDERS)[number];
 export type TemplateContext = Record<Placeholder, string>;
 
@@ -38,6 +38,17 @@ const DEFAULT_CTA = { en: 'Learn more.', pt: 'Saiba mais.' } as const;
 
 const clip = (s: string, n: number) => (s.length <= n ? s : `${s.slice(0, n - 1).trimEnd()}…`);
 
+/** "energia solar" -> "#energiasolar" (sem acentos, só letras/números). */
+export function toHashtags(keywords: readonly string[], max = 5): string {
+  const seen = new Set<string>();
+  for (const k of keywords) {
+    const tag = k.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (tag.length >= 3) seen.add(`#${tag}`);
+    if (seen.size >= max) break;
+  }
+  return [...seen].join(' ');
+}
+
 export const templateLocale = (lang: string): 'en' | 'pt' => (lang === 'pt' ? 'pt' : 'en');
 
 export function renderTemplate(template: string, ctx: TemplateContext): string {
@@ -57,10 +68,11 @@ export function buildContext(
     keywords: analysis.keywords.slice(0, 5).join(', '),
     cta: opts.cta?.trim() || DEFAULT_CTA[loc],
     resumo: analysis.summary.join(' '),
+    hashtags: toHashtags(analysis.keywords),
   };
 }
 
-export type GeneratedOutput = { channel: 'generic'; kind: OutputKind; title: string; body: string };
+export type GeneratedOutput = { channel: string; kind: OutputKind; title: string; body: string; truncated?: boolean };
 
 export function generateOutputs(
   analysis: Pick<Analysis, 'keywords' | 'summary' | 'language'>,
@@ -70,7 +82,7 @@ export function generateOutputs(
   const ctx = buildContext(analysis, text, opts);
   const catalog = CATALOG[templateLocale(analysis.language)];
   return (opts.kinds ?? OUTPUT_KINDS).map((kind) => ({
-    channel: 'generic' as const,
+    channel: 'generic',
     kind,
     title: ctx.titulo,
     body: renderTemplate(catalog[kind], ctx),

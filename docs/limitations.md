@@ -2,7 +2,7 @@
 
 > Documento público, gerado a partir de `apps/web/src/limitations/data.ts`. **Não edite este arquivo diretamente.** Rode `pnpm gen:limitations`.
 
-**Versão:** 0.4.0 · **Última atualização:** 2026-11-09
+**Versão:** 0.5.0 · **Última atualização:** 2026-11-09
 
 ## Sumário
 
@@ -14,6 +14,7 @@
 - [Formatos de entrada e geração por template](#limitacao-formatos-de-entrada-e-geracao) — _Limitado_
 - [Publicação automática em redes sociais](#limitacao-publicacao-automatica-em-redes-sociais) — _Indisponível_
 - [Geração por IA generativa](#limitacao-ia-externa) — _Indisponível_
+- [Sugestões de corte por heurística textual](#limitacao-cortes-por-heuristica-textual) — _Limitado_
 - [Análise de emoção, expressão facial ou viralidade](#limitacao-analise-de-emocao-e-viralidade) — _Indisponível_
 - [Notificações push](#limitacao-push-notifications) — _Indisponível_
 - [Edição colaborativa em tempo real](#limitacao-edicao-colaborativa-em-tempo-real) — _Indisponível_
@@ -125,6 +126,7 @@ A entrada aceita colagem de texto e arquivos .txt, .md, .docx, .pdf, .csv e .jso
 
 - Para PDFs escaneados, rodar OCR fora do produto e colar o texto.
 - Revisar e editar cada saída: elas são rascunhos rotulados como template.
+- Por canal (YouTube, Instagram, TikTok, LinkedIn, Facebook, Blog, E-mail) os limites de caracteres são aproximados: confira cada plataforma antes de publicar.
 - Outros formatos (.pptx, .xlsx, .odt, .rtf) não são prometidos; converta para .docx, .txt ou .csv.
 
 <a id="limitacao-publicacao-automatica-em-redes-sociais"></a>
@@ -155,6 +157,23 @@ APIs generativas são pagas ou exigem cartão de crédito — incompatível com 
 - Configurar seu próprio provedor OpenAI-compatible (desligado por padrão; chave sua, custo seu, consentimento explícito).
 
 **Ver também:** [Transcrição de áudio/vídeo no servidor](#limitacao-transcricao-de-audio-video-no-servidor)
+
+<a id="limitacao-cortes-por-heuristica-textual"></a>
+
+## Sugestões de corte por heurística textual
+
+**Status:** Limitado
+
+Os cortes são sugeridos só a partir do texto e dos timestamps da transcrição (mudança de assunto, pausas, perguntas, imperativos, números, citações e palavras-chave). Exigem uma transcrição com timestamps (.srt/.vtt ou modo no navegador); texto colado sem tempos não gera cortes. A heurística erra: o motivo de cada sugestão é sempre exibido para você julgar e editar. O produto não corta nem renderiza o vídeo.
+
+**O que você pode fazer:**
+
+- Editar início, fim, título e notas de qualquer sugestão, ou criar cortes à mão.
+- Exportar os cortes (JSON/MD/TXT) como roteiro para editar em outro programa.
+
+**Ver também:** [Análise de emoção, expressão facial ou viralidade](#limitacao-analise-de-emocao-e-viralidade), [Renderização de vídeo](#limitacao-renderizacao-de-video)
+
+_Referência interna:_ `docs/clips.md`
 
 <a id="limitacao-analise-de-emocao-e-viralidade"></a>
 

@@ -7,6 +7,7 @@ import { clients, workspaces } from '../db/schema';
 import { audit } from '../lib/audit';
 import { HttpError } from '../lib/http';
 import { registerContentRoutes } from './content';
+import { registerClipRoutes } from './clips';
 import { registerTranscriptRoutes } from './transcripts';
 import {
   clientContext,
@@ -76,3 +77,5 @@ workspaceRoutes.get('/:workspaceId/clients/:clientId', async (c) => {
 registerContentRoutes(workspaceRoutes);
 // Fase 3: jobs de transcrição (colada/SRT/VTT/WASM) e transcrições.
 registerTranscriptRoutes(workspaceRoutes);
+// Fase 4: sugestões de cortes (heurística no navegador; o servidor valida e persiste).
+registerClipRoutes(workspaceRoutes);

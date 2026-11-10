@@ -261,7 +261,7 @@ export function registerTranscriptRoutes(r: Hono<AppEnv>) {
     const { ws, pid } = ids(c as never);
     const rows = await c
       .get('db')
-      .select({ id: transcripts.id, origin: transcripts.origin, language: transcripts.language, chars: sql<number>`length(${transcripts.bodyText})`, createdAt: transcripts.createdAt })
+      .select({ id: transcripts.id, origin: transcripts.origin, language: transcripts.language, chars: sql<number>`length(${transcripts.bodyText})`, segments: sql<number>`(select count(*) from transcript_segments s where s.transcript_id = transcripts.id)`, createdAt: transcripts.createdAt })
       .from(transcripts)
       .where(and(eq(transcripts.projectId, pid), eq(transcripts.workspaceId, ws)))
       .orderBy(desc(transcripts.createdAt))

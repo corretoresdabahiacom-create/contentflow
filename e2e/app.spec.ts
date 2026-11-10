@@ -354,3 +354,151 @@ test('isolamento: B não acessa transcrições/jobs de A (404)', async ({ browse
     expect((await b.request.get(`${base}/projects/${proj.id}${path}`)).status(), path).toBe(404);
   }
 });
+
+// ---------- Fase 4: cortes, canais, SRT/VTT ----------
+const TOPIC_LINES = [
+  'A energia solar cresceu muito no Brasil.',
+  'Os painéis solares reduzem a conta de luz.',
+  'A energia solar é limpa e os painéis duram vinte anos.',
+  'Instalar painéis solares exige pouca manutenção.',
+  'Muitos painéis solares já estão em telhados do Nordeste.',
+  'A energia solar gera economia todo mês.',
+  'Agora vamos falar de receitas de bolo.',
+  'O bolo de cenoura leva três ovos e duas cenouras.',
+  'Misture a farinha com o açúcar e a manteiga do bolo.',
+  'Você sabe qual é o segredo da cobertura de chocolate?',
+  'A cobertura de chocolate precisa de creme de leite e chocolate.',
+  'Asse o bolo por quarenta minutos no forno quente.',
+];
+const clock = (s: number) => `00:${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')},000`;
+const TOPIC_SRT = TOPIC_LINES.map((t, i) => `${i + 1}\n${clock(i * 6)} --> ${clock(i * 6 + 5)}\n${t}`).join('\n\n');
+
+async function importSrt(page: Page, srt: string) {
+  await page.getByRole('tab', { name: 'Import SRT/VTT' }).click();
+  await page.getByLabel('Subtitle file (.srt or .vtt)').setInputFiles({ name: 'a.srt', mimeType: 'text/plain', buffer: Buffer.from(srt) });
+  await page.getByLabel('Review before saving').getByRole('button', { name: 'Approve and save' }).click();
+  await expect(page.getByLabel('Transcript', { exact: true })).toBeVisible();
+}
+
+test('cortes: heurística com justificativa, edição, manual, regenerar preserva edições, exportação', async ({ page }) => {
+  await register(page, `clip-${uniq()}@example.com`);
+  await openNewProject(page, 'Cortes');
+  const panel = page.getByLabel('Clip suggestions', { exact: true });
+  await expect(panel.getByText(/does not analyze audio or video/)).toBeVisible();
+  await expect(panel.getByText(/need a transcript with timestamps/)).toBeVisible();
+  await expect(panel.getByRole('button', { name: 'Suggest clips' })).toHaveCount(0);
+
+  await importSrt(page, TOPIC_SRT);
+  await panel.getByRole('button', { name: 'Suggest clips' }).click();
+  const cards = panel.getByRole('article');
+  await expect(cards.first()).toBeVisible();
+  await expect(cards.first().getByText('Why:')).toBeVisible();
+  await expect(panel.getByText(/topic shifts|question|number|imperative/).first()).toBeVisible();
+  const total = await cards.count();
+  expect(total).toBeGreaterThan(0);
+  // as justificativas nunca falam de emoção, rosto ou viralidade (só o aviso geral nega isso)
+  const reasons = (await cards.allInnerTexts()).join(' ').toLowerCase();
+  expect(reasons).not.toMatch(/viral|emotion|emoç|facial|engaj/);
+
+  // edição manual com versão
+  const first = cards.first();
+  await first.getByLabel('Title').fill('Meu título de corte');
+  await first.getByRole('button', { name: 'Save changes' }).click();
+  await expect(panel.getByRole('article', { name: 'Clip: Meu título de corte' })).toContainText('edited');
+  await expect(panel.getByRole('article', { name: 'Clip: Meu título de corte' })).toContainText('v2');
+
+  // intervalo inválido bloqueia salvar
+  const edited = panel.getByRole('article', { name: 'Clip: Meu título de corte' });
+  await edited.getByLabel('End (m:ss)').fill('0:00');
+  await expect(edited.getByRole('alert')).toContainText('end after the start');
+  await expect(edited.getByRole('button', { name: 'Save changes' })).toBeDisabled();
+  await edited.getByLabel('End (m:ss)').fill('0:50');
+
+  // corte manual
+  const form = panel.getByRole('form', { name: 'Add clip manually' });
+  await form.getByLabel('Title').fill('Corte manual');
+  await form.getByLabel('Start (m:ss)').fill('0:10');
+  await form.getByLabel('End (m:ss)').fill('0:40');
+  await form.getByRole('button', { name: 'Add clip manually' }).click();
+  await expect(panel.getByRole('article', { name: 'Clip: Corte manual' })).toContainText('manual');
+
+  // regenerar não apaga o editado nem o manual
+  await panel.getByRole('button', { name: 'Suggest clips' }).click();
+  await expect(panel.getByRole('article', { name: 'Clip: Meu título de corte' })).toBeVisible();
+  await expect(panel.getByRole('article', { name: 'Clip: Corte manual' })).toBeVisible();
+
+  // persiste e vai para o JSON exportado
+  await page.reload();
+  await expect(panel.getByRole('article', { name: 'Clip: Corte manual' })).toBeVisible();
+  const [dl] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Export JSON' }).click()]);
+  const doc = JSON.parse(await (await import('node:fs/promises')).readFile((await dl.path()) as string, 'utf8'));
+  expect(doc.clips.map((c: { title: string }) => c.title)).toEqual(expect.arrayContaining(['Meu título de corte', 'Corte manual']));
+  expect(doc.clips.find((c: { title: string }) => c.title === 'Corte manual').origin ?? 'manual').toBe('manual');
+  expect(doc.transcript.segments).toHaveLength(12);
+
+  // excluir
+  await panel.getByRole('article', { name: 'Clip: Corte manual' }).getByRole('button', { name: 'Delete' }).click();
+  await expect(panel.getByRole('article', { name: 'Clip: Corte manual' })).toHaveCount(0);
+});
+
+test('exportação SRT/VTT só com timestamps; MD traz cortes', async ({ page }) => {
+  await register(page, `subs-${uniq()}@example.com`);
+  await openNewProject(page, 'Subs');
+  await expect(page.getByRole('button', { name: 'Export SRT' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Export VTT' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Export CSV' })).toBeEnabled();
+
+  await importSrt(page, TOPIC_SRT);
+  await expect(page.getByRole('button', { name: 'Export SRT' })).toBeEnabled();
+  const fs = await import('node:fs/promises');
+  const grab = async (name: string) => {
+    const [dl] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name }).click()]);
+    return { file: dl.suggestedFilename(), body: await fs.readFile((await dl.path()) as string, 'utf8') };
+  };
+  const srt = await grab('Export SRT');
+  expect(srt.file).toBe('Subs.srt');
+  expect(srt.body.startsWith('1\n00:00:00,000 --> 00:00:05,000\nA energia solar cresceu')).toBe(true);
+  expect(srt.body.trimEnd().split('\n\n')).toHaveLength(12);
+  expect((await grab('Export VTT')).body.startsWith('WEBVTT\n\n00:00:00.000 --> 00:00:05.000')).toBe(true);
+});
+
+test('canais: templates por canal, contador de limite e rótulo template', async ({ page }) => {
+  await register(page, `chan-${uniq()}@example.com`);
+  await openNewProject(page, 'Canais');
+  await page.getByLabel('Text', { exact: true }).fill(PT_TEXT);
+  await page.getByRole('button', { name: 'Save and analyze' }).click();
+  await expect(page.getByTestId('lang')).toHaveText('pt');
+
+  const group = page.getByRole('group', { name: 'Generate for channels' });
+  for (const c of ['YouTube', 'TikTok', 'Facebook', 'Blog', 'E-mail']) await group.getByLabel(c, { exact: true }).uncheck();
+  await page.getByRole('button', { name: 'Generate for selected channels' }).click();
+
+  const insta = page.getByRole('article', { name: 'Instagram · Caption' });
+  await expect(insta).toBeVisible();
+  await expect(insta.getByText(/^template · v1$/)).toBeVisible();
+  await expect(insta.getByText(/\/ 2,200 characters/)).toBeVisible();
+  await expect(insta.getByRole('textbox')).toHaveValue(/#\w+/);
+  await expect(page.getByRole('article', { name: 'LinkedIn · Post' })).toBeVisible();
+  await expect(page.getByRole('article')).toHaveCount(2);
+
+  // passar do limite avisa
+  await insta.getByRole('textbox').fill('x'.repeat(2300));
+  await expect(insta.getByText(/Over the approximate limit/)).toBeVisible();
+});
+
+test('isolamento: B não acessa clips de A (404)', async ({ browser }) => {
+  const a = await (await browser.newContext()).newPage();
+  const b = await (await browser.newContext()).newPage();
+  await register(a, `ca-${uniq()}@example.com`);
+  await register(b, `cb-${uniq()}@example.com`);
+  const wsA = (await (await a.request.get('/api/auth/me')).json()).workspaces[0].id as string;
+  const cl = (await (await a.request.get(`/api/workspaces/${wsA}/clients`)).json()).clients[0].id as string;
+  const base = `/api/workspaces/${wsA}/clients/${cl}`;
+  const origin = { Origin: new URL(a.url()).origin };
+  const proj = await (await a.request.post(`${base}/projects`, { data: { name: 'p' }, headers: origin })).json();
+  const mk = await a.request.post(`${base}/projects/${proj.id}/clips`, { data: { clips: [{ startMs: 0, endMs: 5000, title: 't', justification: 'j', origin: 'manual' }] }, headers: origin });
+  expect(mk.status()).toBe(201);
+  expect((await b.request.get(`${base}/projects/${proj.id}/clips`)).status()).toBe(404);
+  const bOrigin = { Origin: new URL(b.url()).origin };
+  expect((await b.request.post(`${base}/projects/${proj.id}/clips`, { data: { clips: [{ startMs: 0, endMs: 5000, title: 't', justification: 'j' }] }, headers: bOrigin })).status()).toBe(404);
+});

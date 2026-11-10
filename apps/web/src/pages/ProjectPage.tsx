@@ -4,22 +4,27 @@ import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router';
 import {
   EXPORT_FORMATS,
+  CHANNELS,
+  CHANNEL_SPECS,
   EXPORT_MIME,
   analyzeText,
   exportFilename,
+  generateChannelOutputs,
   generateOutputs,
+  type Channel,
   serialize,
   type Analysis,
   type ExportDoc,
   type ExportFormat,
 } from '@contentflow/shared';
+import { ClipsPanel } from '../components/ClipsPanel';
 import { ErrorNote } from '../components/ErrorNote';
 import { TranscriptPanel } from '../components/TranscriptPanel';
 import { api, ApiRequestError } from '../lib/api';
 import { ACCEPT, readSourceFile, type FileKind } from '../lib/readers';
 import { useMe } from '../lib/session';
 
-type Output = { id: string; kind: string; title: string | null; body: string; version: number; sourceKind: string };
+type Output = { id: string; channel: string; kind: string; title: string | null; body: string; version: number; sourceKind: string };
 type ProjectDetail = {
   id: string;
   name: string;
@@ -35,16 +40,24 @@ function OutputCard({ o, url, onChanged }: { o: Output; url: string; onChanged: 
     onSettled: onChanged,
   });
   const del = useMutation({ mutationFn: () => api(`${url}/outputs/${o.id}`, { method: 'DELETE' }), onSuccess: onChanged });
+  const label = o.channel === 'generic' ? t(`kinds.${o.kind}`) : `${t(`channels.${o.channel}`)} · ${t(`kinds.${o.kind}`)}`;
+  const max = o.channel === 'generic' ? undefined : CHANNEL_SPECS[o.channel as Channel]?.find((x) => x.kind === o.kind)?.maxChars;
   return (
-    <article className="card space-y-2" aria-label={t(`kinds.${o.kind}`)}>
+    <article className="card space-y-2" aria-label={label}>
       <header className="flex items-center justify-between gap-2">
-        <h3 className="font-medium">{t(`kinds.${o.kind}`)}</h3>
+        <h3 className="font-medium">{label}</h3>
         <span className="rounded border px-2 py-0.5 text-xs" title={t('project.badgeTemplateHint')}>
           {o.sourceKind === 'template' ? t('project.badgeTemplate') : o.sourceKind} · v{o.version}
         </span>
       </header>
-      <label className="sr-only" htmlFor={`o-${o.id}`}>{t(`kinds.${o.kind}`)}</label>
+      <label className="sr-only" htmlFor={`o-${o.id}`}>{label}</label>
       <textarea id={`o-${o.id}`} className="input min-h-32 font-mono" value={body} onChange={(e) => setBody(e.target.value)} />
+      {max && (
+        <p className={`text-xs ${body.length > max ? 'text-red-700 dark:text-red-300' : ''}`}>
+          {t('ch.limit', { n: body.length.toLocaleString(), max: max.toLocaleString() })}
+          {body.length > max ? ` · ${t('ch.over')}` : ''}
+        </p>
+      )}
       <div className="flex gap-2">
         <button className="btn" disabled={save.isPending || body === o.body || !body.trim()} onClick={() => save.mutate()}>
           {t('project.save')}
@@ -101,6 +114,23 @@ export function ProjectPage() {
     },
     onSuccess: refresh,
   });
+  const [picked, setPicked] = useState<Channel[]>([...CHANNELS]);
+  const generateCh = useMutation({
+    mutationFn: async () => {
+      const a = project.data?.source?.analysis;
+      const src = project.data?.source;
+      if (!a || !src || !picked.length) return;
+      const outs = generateChannelOutputs(a, src.text, { title: project.data?.name, channels: picked });
+      await api(`${url}/outputs`, { method: 'POST', json: { outputs: outs.map(({ kind: k, title, body, channel }) => ({ kind: k, title, body, channel })) } });
+    },
+    onSuccess: refresh,
+  });
+  const subs = useQuery({
+    queryKey: ['transcripts', url],
+    enabled: !!ws,
+    queryFn: () => api<{ transcripts: { id: string; segments: number }[] }>(`${url}/transcripts`),
+  });
+  const hasSubs = (subs.data?.transcripts ?? []).some((x) => x.segments > 0);
   const exporter = useMutation({
     mutationFn: async (f: ExportFormat) => {
       const doc = await api<ExportDoc>(`${url}/export-data`);
@@ -179,8 +209,24 @@ export function ProjectPage() {
           {changed && <p role="status" className="text-sm text-amber-700 dark:text-amber-300">{t('project.stale')}</p>}
           <button className="btn" disabled={generate.isPending || changed} onClick={() => generate.mutate()}>{t('project.generate')}</button>
           <ErrorNote error={generate.error} />
+
+          <h3 className="pt-2 font-medium">{t('ch.heading')}</h3>
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">{t('ch.hint')}</p>
+          <fieldset className="flex flex-wrap gap-3">
+            <legend className="sr-only">{t('ch.heading')}</legend>
+            {CHANNELS.map((c) => (
+              <label key={c} className="flex items-center gap-1 text-sm">
+                <input type="checkbox" checked={picked.includes(c)} onChange={(e) => setPicked((p) => (e.target.checked ? [...p, c] : p.filter((x) => x !== c)))} />
+                {t(`channels.${c}`)}
+              </label>
+            ))}
+          </fieldset>
+          <button className="btn" disabled={generateCh.isPending || changed || !picked.length} onClick={() => generateCh.mutate()}>{t('ch.generate')}</button>
+          <ErrorNote error={generateCh.error} />
         </div>
       )}
+
+      <ClipsPanel url={url} />
 
       <div className="space-y-3">
         <h2 className="text-lg font-medium">{t('project.outputs')}</h2>
@@ -195,7 +241,7 @@ export function ProjectPage() {
         <h2 className="text-lg font-medium">{t('project.export')}</h2>
         <div className="flex flex-wrap gap-2">
           {EXPORT_FORMATS.map((f) => (
-            <button key={f} className="btn btn-secondary" disabled={exporter.isPending} onClick={() => exporter.mutate(f)}>
+            <button key={f} className="btn btn-secondary" disabled={exporter.isPending || ((f === 'srt' || f === 'vtt') && !hasSubs)} title={(f === 'srt' || f === 'vtt') && !hasSubs ? t('project.exportNoSubs') : undefined} onClick={() => exporter.mutate(f)}>
               {t('project.exportAs', { format: f.toUpperCase() })}
             </button>
           ))}

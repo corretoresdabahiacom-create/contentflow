@@ -2,7 +2,7 @@
 
 SaaS multi-tenant que transforma **um** conteúdo (texto ou transcrição) em **vários** formatos prontos para canais, com transparência sobre o que é processamento real e o que é sugestão por template. Custo zero: somente free tiers, sem cartão.
 
-> Estado: **Fase 3 (áudio e transcrição)**. Sobre as Fases 1–2 (conta, multi-tenant, projetos, análise de texto, saídas por template, exportação), agora há transcrição por **colagem**, **importação de .srt/.vtt** e **WASM opcional no navegador** (experimental, bloqueado em mobile por padrão), com jobs de estados persistidos, revisão humana antes de salvar e player de áudio **local** (o áudio nunca é enviado; R2 segue excluído). Detalhes e a verificação pendente do WASM em `docs/transcription.md`. Cortes, calendário e administração chegam nas próximas fases. Veja `docs/limitations.md` para o que o produto **não** faz.
+> Estado: **Fase 4 (transformação)**. Sobre as Fases 1–3 (conta, multi-tenant, projetos, análise de texto, transcrição por colagem/SRT/VTT/WASM opcional), agora há **sugestões de corte por heurística textual** (com justificativa visível, edição manual e versão), **saídas por template para YouTube, Instagram, TikTok, LinkedIn, Facebook, Blog e E-mail** (rotuladas `template`, limites de caracteres aproximados) e exportação em **TXT, MD, SRT, VTT, CSV e JSON** (`docs/export.md`, `docs/clips.md`). O produto não analisa emoção nem viralidade e não renderiza vídeo. Plano de edição, calendário e administração chegam nas próximas fases. Veja `docs/limitations.md` para o que **não** fazemos.
 
 ## Estrutura
 - `apps/web`: React + Vite + Tailwind (PWA)

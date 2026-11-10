@@ -1,4 +1,4 @@
-# Arquitetura (Fases 1–3)
+# Arquitetura (Fases 1–4)
 
 ```
 apps/web  (React + Vite + Tailwind, PWA)   ──build──►  apps/web/dist
@@ -24,3 +24,7 @@ packages/shared  (zod, constantes, derivação da chave de autenticação)
 - Pipeline de `processing_jobs` com estados persistidos (colada/SRT/VTT e WASM); o Worker só orquestra estados e valida, nunca processa mídia. Revisão humana antes de gravar. Detalhes e limites em `docs/transcription.md`.
 - Parser SRT/VTT próprio e sem dependências em `packages/shared` (usado pelo cliente e pelas regras de validação do servidor); serializadores SRT/VTT prontos para a Fase 4.
 - Modo WASM isolado em `apps/web/src/lib/wasm.ts` (import dinâmico; fora do cache de instalação do PWA). Lógica de bloqueio é função pura testada.
+
+## Fase 4: transformação
+- Heurística de cortes (`transcript/clips.ts`) e templates por canal (`text/channels.ts`) são funções puras em `packages/shared`, rodando no navegador; o servidor só valida e persiste (cortes com `version`, saídas forçadas a `template`). Detalhes em `docs/clips.md` e `docs/export.md`.
+- A exportação ganhou SRT/VTT (da transcrição com timestamps) e `clips`/`transcript` no JSON, sem mudar o `schemaVersion`.

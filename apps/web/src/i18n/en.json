@@ -112,7 +112,8 @@
     "badgeTemplate": "template",
     "badgeTemplateHint": "Generated from a fixed template, not by AI",
     "export": "Export",
-    "exportAs": "Export {{format}}"
+    "exportAs": "Export {{format}}",
+    "exportNoSubs": "SRT/VTT need a transcript with timestamps."
   },
   "kinds": {
     "title": "Title",
@@ -213,5 +214,43 @@
     "too_many_segments": "Too many cues (maximum 1,000).",
     "too_long": "The text is longer than 200,000 characters.",
     "invalid_timing": "A cue has invalid timestamps."
+  },
+  "clips": {
+    "heading": "Clip suggestions",
+    "disclaimer": "Suggestions come from a text heuristic over your transcript timestamps: topic shifts, pauses, questions, imperatives, numbers, quotes and keywords. It does not analyze audio or video, and it does not detect emotion, facial expression or viral potential. Read each reason and decide for yourself.",
+    "needTimestamps": "Clip suggestions need a transcript with timestamps (import a .srt/.vtt or use the browser mode).",
+    "transcript": "Transcript",
+    "suggest": "Suggest clips",
+    "none": "No clear signals were found in this transcript. You can still add clips by hand.",
+    "empty": "No clips yet.",
+    "cardLabel": "Clip: {{title}}",
+    "manual": "manual",
+    "heuristic": "heuristic",
+    "edited": "edited",
+    "title": "Title",
+    "start": "Start (m:ss)",
+    "end": "End (m:ss)",
+    "invalidRange": "Use m:ss times, with the end after the start, and a title.",
+    "why": "Why",
+    "notes": "Notes",
+    "addManual": "Add clip manually",
+    "manualWhy": "Added manually."
+  },
+  "channels": {
+    "generic": "Generic",
+    "youtube": "YouTube",
+    "instagram": "Instagram",
+    "tiktok": "TikTok",
+    "linkedin": "LinkedIn",
+    "facebook": "Facebook",
+    "blog": "Blog",
+    "email": "E-mail"
+  },
+  "ch": {
+    "heading": "Generate for channels",
+    "hint": "Fixed templates per channel (not AI). Character limits are approximate; check each platform before publishing.",
+    "generate": "Generate for selected channels",
+    "limit": "{{n}} / {{max}} characters (approx. limit)",
+    "over": "Over the approximate limit for this channel."
   }
 }

@@ -112,7 +112,8 @@
     "badgeTemplate": "template",
     "badgeTemplateHint": "Gerado a partir de um template fixo, não por IA",
     "export": "Exportar",
-    "exportAs": "Exportar {{format}}"
+    "exportAs": "Exportar {{format}}",
+    "exportNoSubs": "SRT/VTT precisam de uma transcrição com timestamps."
   },
   "kinds": {
     "title": "Título",
@@ -213,5 +214,43 @@
     "too_many_segments": "Legendas demais (máximo 1.000).",
     "too_long": "O texto tem mais de 200.000 caracteres.",
     "invalid_timing": "Uma legenda tem tempos inválidos."
+  },
+  "clips": {
+    "heading": "Sugestões de cortes",
+    "disclaimer": "As sugestões vêm de uma heurística de texto sobre os timestamps da transcrição: mudança de assunto, pausas, perguntas, imperativos, números, citações e palavras-chave. Ela não analisa áudio nem vídeo e não detecta emoção, expressão facial ou potencial de viralização. Leia o motivo de cada uma e decida você.",
+    "needTimestamps": "Sugestões de cortes precisam de uma transcrição com timestamps (importe um .srt/.vtt ou use o modo no navegador).",
+    "transcript": "Transcrição",
+    "suggest": "Sugerir cortes",
+    "none": "Nenhum sinal claro foi encontrado nesta transcrição. Você ainda pode adicionar cortes à mão.",
+    "empty": "Nenhum corte ainda.",
+    "cardLabel": "Corte: {{title}}",
+    "manual": "manual",
+    "heuristic": "heurística",
+    "edited": "editado",
+    "title": "Título",
+    "start": "Início (m:ss)",
+    "end": "Fim (m:ss)",
+    "invalidRange": "Use tempos m:ss, com o fim depois do início, e um título.",
+    "why": "Por quê",
+    "notes": "Notas",
+    "addManual": "Adicionar corte manualmente",
+    "manualWhy": "Adicionado manualmente."
+  },
+  "channels": {
+    "generic": "Genérico",
+    "youtube": "YouTube",
+    "instagram": "Instagram",
+    "tiktok": "TikTok",
+    "linkedin": "LinkedIn",
+    "facebook": "Facebook",
+    "blog": "Blog",
+    "email": "E-mail"
+  },
+  "ch": {
+    "heading": "Gerar para canais",
+    "hint": "Templates fixos por canal (não é IA). Os limites de caracteres são aproximados; confira cada plataforma antes de publicar.",
+    "generate": "Gerar para os canais selecionados",
+    "limit": "{{n}} / {{max}} caracteres (limite aprox.)",
+    "over": "Acima do limite aproximado deste canal."
   }
 }

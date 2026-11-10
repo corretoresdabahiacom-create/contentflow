@@ -408,6 +408,11 @@ export const clipSuggestions = sqliteTable(
     justification: text('justification').notNull(),
     excerpt: text('excerpt').notNull(),
     edited: bool('edited'),
+    // Fase 4
+    notes: text('notes'),
+    version: integer('version').notNull().default(1),
+    origin: text('origin').notNull().default('heuristic'), // 'heuristic' | 'manual'
+    signalsJson: text('signals_json'),
     ...ts(),
   },
   (t) => [

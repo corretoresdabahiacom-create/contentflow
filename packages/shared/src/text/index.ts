@@ -1,4 +1,5 @@
 export * from './analyze';
+export * from './channels';
 export * from './export';
 export * from './keywords';
 export * from './language';

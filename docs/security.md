@@ -38,6 +38,10 @@ Não-membro de workspace recebe 404 (não revela existência); papel insuficient
 - **CSP (mudança):** `script-src` ganhou `'wasm-unsafe-eval'` (só permite compilar WebAssembly, não `eval` de JS); `connect-src` ganhou `huggingface.co`, `*.huggingface.co` e `*.hf.co` (download do modelo Whisper, só no modo WASM); `media-src 'self' blob:` para o player. Sem CDN de scripts: os `.wasm` do onnxruntime são servidos da mesma origem. Risco aceito: um XSS futuro poderia alcançar esses hosts de modelo; a superfície continua sem `unsafe-eval`/`unsafe-inline` em scripts.
 - Mobile fica bloqueado por padrão no modo WASM (proteção do dispositivo do usuário, não do servidor).
 
+## Cortes e canais (Fase 4)
+- Os cortes são calculados no navegador, então um cliente pode gravar justificativa/sinais falsos **no próprio projeto** (mesmo trade-off da análise de texto); nenhum outro tenant é afetado. O servidor valida intervalo, tamanhos, `origin` e que `transcriptId` pertence ao mesmo projeto e workspace (404 caso contrário).
+- Edição de corte usa `version`; regenerar nunca apaga cortes manuais ou editados. Canais são uma lista fechada; `source_kind` das saídas continua forçado a `template` no servidor.
+
 ## Headers e dados
 API: `X-Content-Type-Options`, `X-Frame-Options: DENY`, `Referrer-Policy`, `Cache-Control: no-store`. Frontend (`apps/web/public/_headers`): CSP restritiva (só `self` e `challenges.cloudflare.com`). O service worker **não** faz cache de `/api` nem de dados privados; só do shell e assets. Logs de auditoria guardam IP com hash, nunca o IP, a senha ou a chave. Lint (`no-restricted-syntax`) proíbe gravar credenciais em storage.
 

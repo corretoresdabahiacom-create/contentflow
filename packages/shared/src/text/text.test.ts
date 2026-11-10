@@ -77,7 +77,7 @@ describe('templates', () => {
         for (const m of t.matchAll(/\{\{\s*(\w+)\s*\}\}/g)) expect(PLACEHOLDERS).toContain(m[1]);
   });
   it('renderTemplate substitui e ignora desconhecidos', () => {
-    const ctx = { titulo: 'T', trecho: 'X', keywords: 'k', cta: 'c', resumo: 'r' };
+    const ctx = { titulo: 'T', trecho: 'X', keywords: 'k', cta: 'c', resumo: 'r', hashtags: '#h' };
     expect(renderTemplate('{{titulo}}-{{ cta }}-{{nada}}', ctx)).toBe('T-c-');
   });
   it('gera os 7 tipos, no idioma do conteúdo, sem placeholders restantes', () => {

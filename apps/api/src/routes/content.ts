@@ -3,6 +3,7 @@ import type { Hono } from 'hono';
 import { z } from 'zod';
 import {
   ERROR_CODES,
+  ALL_CHANNELS,
   EXPORT_SCHEMA,
   EXPORT_SCHEMA_VERSION,
   OUTPUT_KINDS,
@@ -10,7 +11,7 @@ import {
   type ExportDoc,
 } from '@contentflow/shared';
 import type { AppEnv } from '../context';
-import { clients, contentOutputs, projectSources, projects, usageRecords } from '../db/schema';
+import { clients, clipSuggestions, contentOutputs, projectSources, projects, transcriptSegments, transcripts, usageRecords } from '../db/schema';
 import { audit } from '../lib/audit';
 import { HttpError } from '../lib/http';
 import { countOf, quota } from '../lib/quota';
@@ -37,7 +38,7 @@ const sourceSchema = z.object({
 });
 
 const outputInput = z.object({
-  channel: z.string().trim().min(1).max(40).default('generic'),
+  channel: z.enum(ALL_CHANNELS).default('generic'),
   kind: z.enum(OUTPUT_KINDS),
   title: z.string().trim().max(200).nullish(),
   body: z.string().min(1).max(50_000),
@@ -283,6 +284,18 @@ export function registerContentRoutes(r: Hono<AppEnv>) {
     const s = await db.select().from(projectSources).where(eq(projectSources.projectId, p.id)).get();
     const outs = await db.select().from(contentOutputs).where(eq(contentOutputs.projectId, p.id)).orderBy(contentOutputs.createdAt).all();
 
+    const clipRows = await db.select().from(clipSuggestions).where(eq(clipSuggestions.projectId, p.id)).orderBy(clipSuggestions.startMs).all();
+    const tr = await db
+      .select()
+      .from(transcripts)
+      .where(and(eq(transcripts.projectId, p.id), eq(transcripts.workspaceId, workspaceId), sql`exists (select 1 from transcript_segments s where s.transcript_id = transcripts.id)`))
+      .orderBy(desc(transcripts.createdAt))
+      .limit(1)
+      .get();
+    const trSegs = tr
+      ? await db.select({ startMs: transcriptSegments.startMs, endMs: transcriptSegments.endMs, text: transcriptSegments.text }).from(transcriptSegments).where(eq(transcriptSegments.transcriptId, tr.id)).orderBy(transcriptSegments.idx).all()
+      : [];
+
     await db.insert(usageRecords).values({ workspaceId, metric: 'exports', amount: 1, period });
     await audit(db, { action: 'project.export', userId: c.get('user').id, workspaceId, targetKind: 'project', targetId: p.id, ipHash: c.get('ipHash') });
 
@@ -294,6 +307,8 @@ export function registerContentRoutes(r: Hono<AppEnv>) {
       client: { id: cl.id, name: cl.name },
       source: s ? { kind: s.kind, filename: s.filename, chars: s.chars } : null,
       analysis: s?.analysisJson ? JSON.parse(s.analysisJson) : null,
+      clips: clipRows.map((k) => ({ id: k.id, startMs: k.startMs, endMs: k.endMs, title: k.title, justification: k.justification, excerpt: k.excerpt, notes: k.notes, edited: k.edited === 1, version: k.version })),
+      transcript: tr ? { id: tr.id, origin: tr.origin, language: tr.language, segments: trSegs } : null,
       outputs: outs.map((o) => ({
         id: o.id,
         channel: o.channel,
