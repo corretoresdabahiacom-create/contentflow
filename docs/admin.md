@@ -31,3 +31,13 @@ npx wrangler d1 execute contentflow --remote \
   --command "update users set is_global_admin = 1 where email = 'pessoa@exemplo.com'"
 ```
 Revogar é o mesmo comando com `= 0`. Anote quem concedeu e quando em `docs/free-tier-limits.md` (assinaturas humanas).
+
+## Publicar (deploy)
+Plano Free, sem cartão. No seu computador, depois de `npx wrangler login`:
+
+```
+scripts/deploy.sh --check        # só verifica
+scripts/deploy.sh --create-db    # cria o D1 e grava o database_id no wrangler.toml (faça commit)
+TURNSTILE_SITE_KEY=0x4AAA... scripts/deploy.sh   # migra, publica e testa
+```
+O script recusa continuar se o `wrangler.toml` tiver recurso fora do plano gratuito (R1/R2), pede confirmação antes de publicar (R6), gera o `SESSION_PEPPER`, pede o `TURNSTILE_SECRET` sem ecoar e confere `/api/health`, o Turnstile e o 404 de `/billing` (R7).
